@@ -74,6 +74,7 @@ class Agent(BaseModel):
     contact_phone: str
     contact_email: str
     image_base64: str
+    avatar_id: str  # Avatar image identifier for professional agent images
     services_offered: List[str] = []
     is_subscribed: bool = False  # New field for subscription status
     subscription_type: str = "normal"  # "normal" or "premium"
