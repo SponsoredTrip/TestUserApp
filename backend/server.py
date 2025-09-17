@@ -569,6 +569,7 @@ async def populate_sample_data():
     await db.agents.delete_many({})
     await db.packages.delete_many({})
     await db.ribbons.delete_many({})
+    await db.chat_messages.delete_many({})  # Clear chat messages too
     
     # Generate comprehensive sample agents (100 total)
     agents, agent_ids = generate_comprehensive_sample_data()
