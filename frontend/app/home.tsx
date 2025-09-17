@@ -461,7 +461,10 @@ export default function Home() {
         <View style={styles.agentsSection}>
           <Text style={styles.sectionTitle}>
             {selectedFilter === 'all' ? 'All Agents' : 
-             selectedFilter === 'travel' ? 'Travel Agents' : 'Transport Agents'}
+             selectedFilter === 'travel' ? 'Travel Agents' : 
+             selectedFilter === 'transport' ? 'Transport Agents' :
+             selectedFilter === 'sponsored' ? 'Sponsored Agents' :
+             `${selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)} Agents`}
           </Text>
           <FlatList
             data={filteredAgents}
