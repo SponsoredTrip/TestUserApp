@@ -237,13 +237,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "JWT Authentication System"
-    - "Agent Management API"
-    - "Package Management API"
-    - "Dynamic Ribbons API"
-    - "Sample Data Initialization"
+    - "Budget Travel Algorithm & API"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
@@ -251,3 +247,5 @@ agent_communication:
       message: "Initial implementation complete with JWT auth, agent/package APIs, and dynamic ribbons. All backend APIs need testing before frontend integration testing."
     - agent: "testing"
       message: "Backend testing completed successfully! All 5 high-priority backend tasks are working correctly. Fixed ObjectId serialization issue in JWT auth endpoints. All APIs tested: JWT auth (register/login/me), agents (with filtering), packages (with filtering), ribbons, sample data init, and booking system. 100% success rate on comprehensive test suite. Backend is ready for frontend integration."
+    - agent: "main"
+      message: "Implemented comprehensive Budget Travel system Phase 1 - Added models (BudgetTravelRequest, PackageCombination, BudgetTravelResponse), algorithm for package combinations, location-based transport cost calculations, enhanced sample data with Goa packages and coordinates, added Budget Travel to Explore More ribbon. Ready for backend testing of budget travel APIs (/api/budget-travel, /api/budget-travel/preview)."
