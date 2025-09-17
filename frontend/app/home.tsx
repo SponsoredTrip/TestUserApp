@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 import { colors, layout, spacing, typography, shadows, radius, brand } from '../constants/theme';
 import { Card } from '../components/UI/Card';
 import { Button } from '../components/UI/Button';
+import { AdvancedFilterModal, FilterOptions } from '../components/UI/AdvancedFilterModal';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
