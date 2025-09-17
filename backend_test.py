@@ -173,9 +173,9 @@ class BackendTester:
             self.log_result("Get Current User", False, f"Request failed: {str(e)}")
             return False
 
-    def test_get_agents(self):
-        """Test get agents endpoint"""
-        print("🔄 Testing Get Agents...")
+    def test_comprehensive_agent_count_verification(self):
+        """Test that exactly 100 agents are created (50 travel + 50 transport)"""
+        print("🔄 Testing Comprehensive Agent Count Verification...")
         
         try:
             # Test getting all agents
@@ -183,12 +183,20 @@ class BackendTester:
             
             if response.status_code == 200:
                 agents = response.json()
-                if isinstance(agents, list) and len(agents) > 0:
-                    # Check if agents have required fields
-                    required_fields = ["id", "name", "type", "description", "rating"]
-                    first_agent = agents[0]
-                    if all(field in first_agent for field in required_fields):
-                        self.log_result("Get All Agents", True, f"Retrieved {len(agents)} agents successfully")
+                if isinstance(agents, list):
+                    total_agents = len(agents)
+                    
+                    # Count by type
+                    travel_agents = [a for a in agents if a["type"] == "travel"]
+                    transport_agents = [a for a in agents if a["type"] == "transport"]
+                    
+                    travel_count = len(travel_agents)
+                    transport_count = len(transport_agents)
+                    
+                    # Verify exact counts
+                    if total_agents == 100 and travel_count == 50 and transport_count == 50:
+                        self.log_result("Comprehensive Agent Count Verification", True, 
+                                      f"Perfect! Found exactly 100 agents: {travel_count} travel + {transport_count} transport")
                         
                         # Test filtering by type
                         travel_response = requests.get(
@@ -196,28 +204,43 @@ class BackendTester:
                             headers=self.headers, 
                             timeout=10
                         )
-                        if travel_response.status_code == 200:
-                            travel_agents = travel_response.json()
-                            travel_count = len([a for a in travel_agents if a["type"] == "travel"])
-                            self.log_result("Get Travel Agents", True, f"Retrieved {travel_count} travel agents")
-                            return True
+                        
+                        transport_response = requests.get(
+                            f"{self.base_url}/agents?agent_type=transport", 
+                            headers=self.headers, 
+                            timeout=10
+                        )
+                        
+                        if travel_response.status_code == 200 and transport_response.status_code == 200:
+                            filtered_travel = travel_response.json()
+                            filtered_transport = transport_response.json()
+                            
+                            if len(filtered_travel) == 50 and len(filtered_transport) == 50:
+                                self.log_result("Agent Type Filtering", True, 
+                                              f"Filtering works perfectly: {len(filtered_travel)} travel, {len(filtered_transport)} transport")
+                                return True
+                            else:
+                                self.log_result("Agent Type Filtering", False, 
+                                              f"Filter count mismatch: travel={len(filtered_travel)}, transport={len(filtered_transport)}")
+                                return False
                         else:
-                            self.log_result("Get Travel Agents", False, 
-                                          f"HTTP {travel_response.status_code}: {travel_response.text}")
+                            self.log_result("Agent Type Filtering", False, 
+                                          f"Filter requests failed: travel={travel_response.status_code}, transport={transport_response.status_code}")
                             return False
                     else:
-                        self.log_result("Get Agents", False, f"Missing required fields in agent data: {first_agent}")
+                        self.log_result("Comprehensive Agent Count Verification", False, 
+                                      f"Count mismatch: total={total_agents} (expected 100), travel={travel_count} (expected 50), transport={transport_count} (expected 50)")
                         return False
                 else:
-                    self.log_result("Get Agents", False, "No agents returned or invalid format")
+                    self.log_result("Comprehensive Agent Count Verification", False, "Invalid response format")
                     return False
             else:
-                self.log_result("Get Agents", False, 
+                self.log_result("Comprehensive Agent Count Verification", False, 
                               f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_result("Get Agents", False, f"Request failed: {str(e)}")
+            self.log_result("Comprehensive Agent Count Verification", False, f"Request failed: {str(e)}")
             return False
 
     def test_get_packages(self):
