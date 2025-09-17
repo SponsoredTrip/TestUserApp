@@ -46,6 +46,7 @@ class User(BaseModel):
     email: str
     password_hash: str
     full_name: str
+    avatar_id: str = "avatar1"  # Default avatar for user profiles
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class UserCreate(BaseModel):
