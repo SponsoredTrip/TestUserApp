@@ -296,10 +296,12 @@ export default function Home() {
         />
       </Card>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Filter Ribbon - Always show first and make it sticky */}
+      {/* Sticky Filter Ribbon */}
+      <View style={styles.stickyFilterContainer}>
         {ribbons.filter(ribbon => ribbon.type === 'filter').map(ribbon => renderFilterRibbon(ribbon))}
-        
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Other Dynamic Ribbons */}
         {ribbons.filter(ribbon => ribbon.type !== 'filter').map(ribbon => {
           switch (ribbon.type) {
