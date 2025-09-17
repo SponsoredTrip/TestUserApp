@@ -386,7 +386,12 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 async def get_agents(agent_type: Optional[str] = None):
     query = {"is_active": True}
     if agent_type:
-        query["type"] = agent_type
+        if agent_type == "sponsored":
+            # Filter by subscription status for sponsored agents
+            query["is_subscribed"] = True
+        else:
+            # Filter by agent type for travel/transport
+            query["type"] = agent_type
     
     agents = await db.agents.find(query).to_list(100)
     return [Agent(**agent) for agent in agents]
