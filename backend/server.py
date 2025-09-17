@@ -146,6 +146,167 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def parse_duration_to_days(duration_str: str) -> int:
+    """Parse duration string like '5 days 4 nights' or '3 days' to number of days"""
+    # Extract numbers from duration string
+    numbers = re.findall(r'\d+', duration_str.lower())
+    if numbers:
+        return int(numbers[0])  # First number is usually days
+    return 1  # Default to 1 day
+
+def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate distance between two coordinates using Haversine formula"""
+    R = 6371  # Earth's radius in kilometers
+    
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    
+    a = (math.sin(dlat/2) * math.sin(dlat/2) + 
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * 
+         math.sin(dlon/2) * math.sin(dlon/2))
+    
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    distance = R * c
+    
+    return distance
+
+def calculate_transport_cost(distance_km: float, transport_type: str = "taxi") -> float:
+    """Calculate transport cost based on distance and type"""
+    rates = {
+        "taxi": 15,  # ₹15 per km
+        "bus": 5,    # ₹5 per km
+        "other": 10  # ₹10 per km default
+    }
+    rate = rates.get(transport_type, rates["other"])
+    return distance_km * rate
+
+async def load_location_data():
+    """Load location data from JSON file"""
+    try:
+        with open(ROOT_DIR / 'location_data.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
+
+async def find_budget_combinations(
+    budget: float, 
+    num_persons: int, 
+    num_days: int, 
+    place_filter: Optional[str] = None
+) -> List[PackageCombination]:
+    """Find optimal package combinations within budget and days"""
+    combinations = []
+    
+    # Get all active travel packages
+    query = {"is_active": True, "agent_id": {"$exists": True}}
+    
+    # Filter by place if specified
+    if place_filter:
+        query["destination"] = {"$regex": place_filter, "$options": "i"}
+    
+    packages = await db.packages.find(query).to_list(100)
+    
+    # Get transport packages for inter-city travel
+    transport_query = {"is_active": True}
+    transport_agents = await db.agents.find({"type": "transport", "is_active": True}).to_list(50)
+    transport_agent_ids = [agent["id"] for agent in transport_agents]
+    
+    transport_packages = await db.packages.find({
+        "agent_id": {"$in": transport_agent_ids},
+        "is_active": True
+    }).to_list(100)
+    
+    # Parse package durations
+    for package in packages:
+        package['duration_days'] = parse_duration_to_days(package['duration'])
+        package['cost_per_person'] = package['price']
+        package['total_cost'] = package['price'] * num_persons
+    
+    # Find combinations using dynamic programming approach
+    valid_packages = [p for p in packages if p['total_cost'] <= budget and p['duration_days'] <= num_days]
+    
+    # Simple greedy approach for now - can be enhanced with DP
+    for i, pkg1 in enumerate(valid_packages):
+        if pkg1['duration_days'] == num_days and pkg1['total_cost'] <= budget:
+            # Single package fits perfectly
+            combination = PackageCombination(
+                packages=[{
+                    "id": pkg1['id'],
+                    "title": pkg1['title'],
+                    "destination": pkg1['destination'],
+                    "duration_days": pkg1['duration_days'],
+                    "cost": pkg1['total_cost'],
+                    "agent_id": pkg1['agent_id']
+                }],
+                transport_segments=[],
+                total_cost=pkg1['total_cost'],
+                total_days=pkg1['duration_days'],
+                savings=budget - pkg1['total_cost'],
+                itinerary_summary=f"{pkg1['title']} for {pkg1['duration_days']} days"
+            )
+            combinations.append(combination)
+        
+        # Look for combinations with other packages
+        remaining_budget = budget - pkg1['total_cost']
+        remaining_days = num_days - pkg1['duration_days']
+        
+        if remaining_days > 0 and remaining_budget > 0:
+            for j, pkg2 in enumerate(valid_packages[i+1:], i+1):
+                if pkg2['duration_days'] <= remaining_days and pkg2['total_cost'] <= remaining_budget:
+                    # Calculate transport cost between destinations
+                    transport_cost = 0
+                    transport_segments = []
+                    
+                    if pkg1['destination'].lower() != pkg2['destination'].lower():
+                        # Estimate transport cost (simplified)
+                        estimated_distance = 200  # Default 200km between cities
+                        transport_cost = calculate_transport_cost(estimated_distance) * num_persons
+                        
+                        if transport_cost <= remaining_budget - pkg2['total_cost']:
+                            transport_segments.append({
+                                "from": pkg1['destination'],
+                                "to": pkg2['destination'],
+                                "cost": transport_cost,
+                                "distance_km": estimated_distance,
+                                "type": "taxi"
+                            })
+                    
+                    total_combination_cost = pkg1['total_cost'] + pkg2['total_cost'] + transport_cost
+                    total_combination_days = pkg1['duration_days'] + pkg2['duration_days']
+                    
+                    if total_combination_cost <= budget and total_combination_days <= num_days:
+                        combination = PackageCombination(
+                            packages=[
+                                {
+                                    "id": pkg1['id'],
+                                    "title": pkg1['title'],
+                                    "destination": pkg1['destination'],
+                                    "duration_days": pkg1['duration_days'],
+                                    "cost": pkg1['total_cost'],
+                                    "agent_id": pkg1['agent_id']
+                                },
+                                {
+                                    "id": pkg2['id'],
+                                    "title": pkg2['title'],
+                                    "destination": pkg2['destination'],
+                                    "duration_days": pkg2['duration_days'],
+                                    "cost": pkg2['total_cost'],
+                                    "agent_id": pkg2['agent_id']
+                                }
+                            ],
+                            transport_segments=transport_segments,
+                            total_cost=total_combination_cost,
+                            total_days=total_combination_days,
+                            savings=budget - total_combination_cost,
+                            itinerary_summary=f"{pkg1['title']} ({pkg1['duration_days']} days) + {pkg2['title']} ({pkg2['duration_days']} days)"
+                        )
+                        combinations.append(combination)
+    
+    # Sort by best value (lowest cost, highest savings)
+    combinations.sort(key=lambda x: (-x.savings, x.total_cost))
+    
+    return combinations[:5]  # Return top 5 combinations
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
