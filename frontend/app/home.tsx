@@ -208,11 +208,24 @@ export default function Home() {
           {ribbon.items.map((item, index) => (
             <TouchableOpacity 
               key={index} 
-              style={styles.exploreCard}
+              style={[
+                styles.exploreCard,
+                item.action === 'budget_travel' && styles.budgetTravelCard
+              ]}
               onPress={() => handleExploreItemPress(item)}
             >
-              <Text style={styles.exploreIcon}>{item.image}</Text>
-              <Text style={styles.exploreName}>{item.category}</Text>
+              <Text style={[
+                styles.exploreIcon,
+                item.action === 'budget_travel' && styles.budgetTravelIcon
+              ]}>
+                {item.image}
+              </Text>
+              <Text style={[
+                styles.exploreName,
+                item.action === 'budget_travel' && styles.budgetTravelName
+              ]}>
+                {item.category}
+              </Text>
               <Text style={styles.exploreCount}>{item.count} options</Text>
               {item.action === 'budget_travel' && (
                 <View style={styles.budgetBadge}>
