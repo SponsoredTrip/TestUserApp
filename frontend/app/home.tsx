@@ -338,14 +338,15 @@ export default function Home() {
           <View key={ribbon.id} style={styles.stickyFilterContent}>
             <Text style={styles.stickyFilterTitle}>{ribbon.title}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+              {/* Advanced Filter Dropdown Button */}
               <TouchableOpacity
-                style={[styles.filterChip, selectedFilter === 'all' && styles.filterChipActive]}
-                onPress={() => setSelectedFilter('all')}
+                style={[styles.filterChip, styles.advancedFilterChip]}
+                onPress={() => setShowAdvancedFilter(true)}
               >
-                <Text style={[styles.filterChipText, selectedFilter === 'all' && styles.filterChipTextActive]}>
-                  All
-                </Text>
+                <Text style={styles.filterChipText}>All</Text>
+                <Text style={styles.dropdownIcon}>▼</Text>
               </TouchableOpacity>
+              
               {ribbon.items.map((item, index) => (
                 <TouchableOpacity
                   key={index}
