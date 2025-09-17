@@ -291,9 +291,9 @@ class BackendTester:
             self.log_result("Get Packages", False, f"Request failed: {str(e)}")
             return False
 
-    def test_get_ribbons(self):
-        """Test get ribbons endpoint"""
-        print("🔄 Testing Get Ribbons...")
+    def test_budget_travel_ribbon_integration(self):
+        """Test that Budget Travel appears first in Explore More ribbon"""
+        print("🔄 Testing Budget Travel Ribbon Integration...")
         
         try:
             response = requests.get(f"{self.base_url}/ribbons", headers=self.headers, timeout=10)
@@ -301,33 +301,47 @@ class BackendTester:
             if response.status_code == 200:
                 ribbons = response.json()
                 if isinstance(ribbons, list) and len(ribbons) > 0:
-                    # Check if ribbons have required fields
-                    required_fields = ["id", "title", "type", "items", "order"]
-                    first_ribbon = ribbons[0]
-                    if all(field in first_ribbon for field in required_fields):
-                        # Check if we have different types of ribbons
-                        ribbon_types = set(r["type"] for r in ribbons)
-                        expected_types = {"filter", "recommendation", "explore"}
-                        if ribbon_types.intersection(expected_types):
-                            self.log_result("Get Ribbons", True, 
-                                          f"Retrieved {len(ribbons)} ribbons with types: {list(ribbon_types)}")
-                            return True
+                    # Find the "Explore More" ribbon
+                    explore_ribbons = [r for r in ribbons if r["type"] == "explore"]
+                    
+                    if explore_ribbons:
+                        explore_ribbon = explore_ribbons[0]
+                        items = explore_ribbon.get("items", [])
+                        
+                        if items and len(items) > 0:
+                            # Check if Budget Travel is the first item
+                            first_item = items[0]
+                            
+                            # Check if it's Budget Travel with correct action
+                            if (first_item.get("action") == "budget_travel" or 
+                                "budget travel" in first_item.get("category", "").lower() or
+                                "budget travel" in first_item.get("title", "").lower()):
+                                
+                                self.log_result("Budget Travel Ribbon Integration", True, 
+                                              f"Budget Travel is first in Explore More ribbon with action: {first_item.get('action', 'N/A')}")
+                                return True
+                            else:
+                                self.log_result("Budget Travel Ribbon Integration", False, 
+                                              f"Budget Travel not first in ribbon. First item: {first_item}")
+                                return False
                         else:
-                            self.log_result("Get Ribbons", False, f"Unexpected ribbon types: {list(ribbon_types)}")
+                            self.log_result("Budget Travel Ribbon Integration", False, 
+                                          "Explore More ribbon has no items")
                             return False
                     else:
-                        self.log_result("Get Ribbons", False, f"Missing required fields in ribbon data: {first_ribbon}")
+                        self.log_result("Budget Travel Ribbon Integration", False, 
+                                      "No Explore More ribbon found")
                         return False
                 else:
-                    self.log_result("Get Ribbons", False, "No ribbons returned or invalid format")
+                    self.log_result("Budget Travel Ribbon Integration", False, "No ribbons returned")
                     return False
             else:
-                self.log_result("Get Ribbons", False, 
+                self.log_result("Budget Travel Ribbon Integration", False, 
                               f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_result("Get Ribbons", False, f"Request failed: {str(e)}")
+            self.log_result("Budget Travel Ribbon Integration", False, f"Request failed: {str(e)}")
             return False
 
     def test_create_booking(self):
