@@ -16,6 +16,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { colors, layout, spacing, typography, shadows, radius, brand } from '../constants/theme';
 import { Card } from '../components/UI/Card';
 import { Button } from '../components/UI/Button';
+import { Avatar } from '../components/UI/Avatar';
 import { ChatModal } from '../components/UI/ChatModal';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
