@@ -54,6 +54,8 @@ export default function AgentDetails() {
   const [agent, setAgent] = useState<Agent | null>(null);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
 
   useEffect(() => {
     if (id) {
