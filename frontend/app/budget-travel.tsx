@@ -97,23 +97,39 @@ export default function BudgetTravel() {
     }
   };
 
-  const handleDestinationGroupPress = (destination: string) => {
-    // Set the place filter and trigger search
-    setFormData({...formData, place: destination});
-    handleSearch();
+  const handleDestinationGroupPress = async (destination: string) => {
+    // Set the place filter and trigger search with default values
+    const defaultBudget = '50000';
+    const defaultPersons = '2';
+    const defaultDays = '6';
+    
+    setFormData({
+      budget: defaultBudget,
+      num_persons: defaultPersons,
+      num_days: defaultDays,
+      place: destination.toLowerCase()
+    });
+    
+    // Trigger search immediately with the destination
+    await performSearch(defaultBudget, defaultPersons, defaultDays, destination.toLowerCase());
   };
 
-  const handleSearch = async () => {
-    if (!formData.budget || !formData.num_persons || !formData.num_days) {
+  const performSearch = async (budget?: string, persons?: string, days?: string, place?: string) => {
+    const searchBudget = budget || formData.budget;
+    const searchPersons = persons || formData.num_persons;
+    const searchDays = days || formData.num_days;
+    const searchPlace = place || formData.place;
+
+    if (!searchBudget || !searchPersons || !searchDays) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
-    const budget = parseFloat(formData.budget);
-    const numPersons = parseInt(formData.num_persons);
-    const numDays = parseInt(formData.num_days);
+    const budgetNum = parseFloat(searchBudget);
+    const numPersons = parseInt(searchPersons);
+    const numDays = parseInt(searchDays);
 
-    if (budget <= 0 || numPersons <= 0 || numDays <= 0) {
+    if (budgetNum <= 0 || numPersons <= 0 || numDays <= 0) {
       Alert.alert('Error', 'Please enter valid values');
       return;
     }
@@ -122,10 +138,10 @@ export default function BudgetTravel() {
     try {
       const token = await AsyncStorage.getItem('auth_token');
       const requestData: BudgetTravelRequest = {
-        budget,
+        budget: budgetNum,
         num_persons: numPersons,
         num_days: numDays,
-        place: formData.place || undefined,
+        place: searchPlace || undefined,
       };
 
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/budget-travel`, {
@@ -153,6 +169,10 @@ export default function BudgetTravel() {
     } finally {
       setSearching(false);
     }
+  };
+
+  const handleSearch = async () => {
+    await performSearch();
   };
 
   const renderCombination = (combination: PackageCombination, index: number) => (
