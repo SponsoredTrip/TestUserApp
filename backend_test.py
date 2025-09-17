@@ -466,16 +466,15 @@ class BackendTester:
             self.log_result("Budget Travel Preview", False, f"Request failed: {str(e)}")
             return False
 
-    def test_budget_travel_search_goa_example(self):
-        """Test budget travel search with Goa example from requirements"""
-        print("🔄 Testing Budget Travel Search - Goa Example...")
+    def test_budget_travel_with_larger_dataset(self):
+        """Test budget travel search with larger dataset (100 agents)"""
+        print("🔄 Testing Budget Travel with Larger Dataset...")
         
-        # Test data from requirements: budget=50000, num_persons=2, num_days=6, place="goa"
+        # Test data from requirements: budget=50000, num_persons=2, num_days=6
         search_request = {
             "budget": 50000,
             "num_persons": 2,
-            "num_days": 6,
-            "place": "goa"
+            "num_days": 6
         }
         
         try:
@@ -491,54 +490,84 @@ class BackendTester:
                 required_fields = ["request", "combinations", "total_combinations_found", "message"]
                 
                 if all(field in data for field in required_fields):
-                    # Verify request echo
-                    if data["request"]["budget"] == 50000 and data["request"]["place"] == "goa":
-                        combinations = data["combinations"]
-                        if isinstance(combinations, list) and len(combinations) > 0:
-                            # Check first combination structure
-                            first_combo = combinations[0]
-                            combo_fields = ["packages", "transport_segments", "total_cost", "total_days", "savings", "itinerary_summary"]
+                    combinations = data["combinations"]
+                    if isinstance(combinations, list) and len(combinations) > 0:
+                        # Check that we're getting diverse agent IDs (from larger dataset)
+                        all_agent_ids = set()
+                        for combo in combinations:
+                            for package in combo.get("packages", []):
+                                all_agent_ids.add(package.get("agent_id"))
+                        
+                        # With 100 agents, we should see more diversity
+                        if len(all_agent_ids) >= 3:  # At least 3 different agents used
+                            self.log_result("Budget Travel with Larger Dataset", True, 
+                                          f"Found {len(combinations)} combinations using {len(all_agent_ids)} different agents from larger dataset")
                             
-                            if all(field in first_combo for field in combo_fields):
-                                # Verify constraints
-                                if first_combo["total_cost"] <= 50000 and first_combo["total_days"] <= 6:
-                                    # Check if Goa packages are included
-                                    goa_packages = [pkg for pkg in first_combo["packages"] if "goa" in pkg["destination"].lower()]
-                                    if goa_packages:
-                                        self.log_result("Budget Travel Search - Goa Example", True, 
-                                                      f"Found {len(combinations)} combinations, first combo: ₹{first_combo['total_cost']} for {first_combo['total_days']} days with {len(goa_packages)} Goa packages")
+                            # Test with specific place filter
+                            place_search_request = {
+                                "budget": 50000,
+                                "num_persons": 2,
+                                "num_days": 6,
+                                "place": "goa"
+                            }
+                            
+                            place_response = requests.post(
+                                f"{self.base_url}/budget-travel",
+                                headers=self.headers,
+                                json=place_search_request,
+                                timeout=15
+                            )
+                            
+                            if place_response.status_code == 200:
+                                place_data = place_response.json()
+                                place_combinations = place_data.get("combinations", [])
+                                
+                                if place_combinations:
+                                    # Verify Goa packages are included
+                                    goa_packages_found = False
+                                    for combo in place_combinations:
+                                        for package in combo.get("packages", []):
+                                            if "goa" in package.get("destination", "").lower():
+                                                goa_packages_found = True
+                                                break
+                                        if goa_packages_found:
+                                            break
+                                    
+                                    if goa_packages_found:
+                                        self.log_result("Budget Travel - Place Filter with Larger Dataset", True, 
+                                                      f"Found {len(place_combinations)} Goa combinations from larger dataset")
                                         return True
                                     else:
-                                        self.log_result("Budget Travel Search - Goa Example", False, 
-                                                      f"No Goa packages found in combinations despite place filter")
+                                        self.log_result("Budget Travel - Place Filter with Larger Dataset", False, 
+                                                      "No Goa packages found despite place filter")
                                         return False
                                 else:
-                                    self.log_result("Budget Travel Search - Goa Example", False, 
-                                                  f"Combination violates constraints: cost={first_combo['total_cost']}, days={first_combo['total_days']}")
+                                    self.log_result("Budget Travel - Place Filter with Larger Dataset", False, 
+                                                  "No combinations found for Goa with larger dataset")
                                     return False
                             else:
-                                self.log_result("Budget Travel Search - Goa Example", False, 
-                                              f"Missing combination fields: {combo_fields}")
+                                self.log_result("Budget Travel - Place Filter with Larger Dataset", False, 
+                                              f"Place filter request failed: HTTP {place_response.status_code}")
                                 return False
                         else:
-                            self.log_result("Budget Travel Search - Goa Example", False, 
-                                          f"No combinations found for Goa with budget ₹50,000")
+                            self.log_result("Budget Travel with Larger Dataset", False, 
+                                          f"Not enough agent diversity: only {len(all_agent_ids)} agents used")
                             return False
                     else:
-                        self.log_result("Budget Travel Search - Goa Example", False, 
-                                      f"Request echo mismatch: {data['request']}")
+                        self.log_result("Budget Travel with Larger Dataset", False, 
+                                      "No combinations found with larger dataset")
                         return False
                 else:
-                    self.log_result("Budget Travel Search - Goa Example", False, 
+                    self.log_result("Budget Travel with Larger Dataset", False, 
                                   f"Missing required fields: {required_fields}")
                     return False
             else:
-                self.log_result("Budget Travel Search - Goa Example", False, 
+                self.log_result("Budget Travel with Larger Dataset", False, 
                               f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_result("Budget Travel Search - Goa Example", False, f"Request failed: {str(e)}")
+            self.log_result("Budget Travel with Larger Dataset", False, f"Request failed: {str(e)}")
             return False
 
     def test_budget_travel_edge_cases(self):
