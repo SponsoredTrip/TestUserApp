@@ -138,6 +138,11 @@ export default function AgentDetails() {
     }
   };
 
+  const handleOpenChat = (packageItem: Package) => {
+    setSelectedPackage(packageItem);
+    setShowChatModal(true);
+  };
+
   const renderPackageCard = ({ item }: { item: Package }) => (
     <View style={styles.packageCard}>
       <View style={styles.packageHeader}>
