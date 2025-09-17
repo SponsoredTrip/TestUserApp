@@ -602,6 +602,39 @@ async def initialize_sample_data():
             "is_active": True,
             "created_at": datetime.utcnow()
         },
+        # Add Goa packages for budget travel example
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_1_id,
+            "title": "Goa Beach Adventure",
+            "description": "3-day beach adventure with water sports and local sightseeing",
+            "price": 10000,
+            "duration": "3 days 2 nights",
+            "duration_days": 3,
+            "destination": "Goa",
+            "latitude": 15.2993,
+            "longitude": 74.1240,
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Water sports", "Beach access", "Local guide", "Meals included", "Transportation"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_2_id,
+            "title": "Goa Heritage Tour",
+            "description": "2-day cultural and heritage exploration of Old Goa",
+            "price": 8000,
+            "duration": "2 days 1 night",
+            "duration_days": 2,
+            "destination": "Goa",
+            "latitude": 15.5057,
+            "longitude": 73.9964,
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Heritage sites", "Cultural guide", "Local cuisine", "Transportation", "Photography"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
         # Royal Rajasthan Tours packages
         {
             "id": str(uuid.uuid4()),
