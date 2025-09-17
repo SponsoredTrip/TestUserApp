@@ -1001,25 +1001,31 @@ class BackendTester:
         
         # Test sequence - order matters for authentication
         test_sequence = [
-            # Core comprehensive improvements tests
+            # Initialize comprehensive data first
             self.test_comprehensive_sample_data_initialization,
-            self.test_comprehensive_agent_count_verification,
-            self.test_budget_travel_ribbon_integration,
-            self.test_budget_travel_with_larger_dataset,
             
-            # Authentication tests
+            # Phase 1 & Phase 2 Priority Tests (as per review request)
+            self.test_phase1_filter_options_structure,
+            self.test_budget_travel_preview,  # Phase 1: Budget Travel Groups
+            self.test_phase2_subscription_status,
+            self.test_phase2_recommended_section,
+            
+            # Authentication tests (needed for chat API)
             self.test_user_registration,
             self.test_user_login,
             self.test_get_current_user,
             
-            # Additional API tests
+            # Phase 2: Chat API (requires authentication)
+            self.test_phase2_chat_api,
+            
+            # Additional comprehensive tests
+            self.test_comprehensive_agent_count_verification,
+            self.test_budget_travel_ribbon_integration,
+            self.test_budget_travel_with_larger_dataset,
             self.test_get_packages,
             self.test_create_booking,
             self.test_get_user_bookings,
-            
-            # Budget Travel API Tests
             self.test_enhanced_sample_data,
-            self.test_budget_travel_preview,
             self.test_budget_travel_edge_cases
         ]
         
