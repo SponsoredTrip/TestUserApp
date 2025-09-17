@@ -439,6 +439,69 @@ async def get_user_bookings(current_user: dict = Depends(get_current_user)):
     bookings = await db.bookings.find({"user_id": current_user["id"]}).to_list(100)
     return [Booking(**booking) for booking in bookings]
 
+# Budget Travel Routes
+@api_router.post("/budget-travel", response_model=BudgetTravelResponse)
+async def find_budget_travel_packages(request: BudgetTravelRequest):
+    """Find optimal package combinations within budget and time constraints"""
+    try:
+        combinations = await find_budget_combinations(
+            budget=request.budget,
+            num_persons=request.num_persons,
+            num_days=request.num_days,
+            place_filter=request.place
+        )
+        
+        if not combinations:
+            return BudgetTravelResponse(
+                request=request,
+                combinations=[],
+                total_combinations_found=0,
+                message=f"No suitable package combinations found within ₹{request.budget} budget for {request.num_persons} persons and {request.num_days} days."
+            )
+        
+        return BudgetTravelResponse(
+            request=request,
+            combinations=combinations,
+            total_combinations_found=len(combinations),
+            message=f"Found {len(combinations)} optimal package combinations within your budget!"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error finding budget combinations: {str(e)}")
+
+@api_router.get("/budget-travel/preview")
+async def get_budget_travel_preview():
+    """Get a preview of available destinations and price ranges for budget travel"""
+    try:
+        # Get all active packages with basic stats
+        packages = await db.packages.find({"is_active": True}).to_list(100)
+        
+        destinations = set()
+        min_price = float('inf')
+        max_price = 0
+        duration_stats = {}
+        
+        for package in packages:
+            destinations.add(package['destination'])
+            min_price = min(min_price, package['price'])
+            max_price = max(max_price, package['price'])
+            
+            duration_days = parse_duration_to_days(package['duration'])
+            duration_stats[duration_days] = duration_stats.get(duration_days, 0) + 1
+        
+        return {
+            "available_destinations": list(destinations),
+            "price_range": {
+                "min": min_price if min_price != float('inf') else 0,
+                "max": max_price
+            },
+            "popular_durations": sorted(duration_stats.items(), key=lambda x: x[1], reverse=True)[:5],
+            "total_packages": len(packages),
+            "suggestion": f"Budget range: ₹{min_price}-₹{max_price} per person. Popular destinations: {', '.join(list(destinations)[:3])}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting budget preview: {str(e)}")
+
 # Initialize sample data
 @api_router.post("/init-data")
 async def initialize_sample_data():
