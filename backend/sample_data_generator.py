@@ -2,6 +2,9 @@ import uuid
 import random
 from datetime import datetime
 
+# Available avatar IDs (corresponds to avatar images in frontend)
+AVATAR_IDS = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+
 def generate_comprehensive_sample_data():
     """Generate 50 travel agents + 50 transport agents with comprehensive data"""
     
