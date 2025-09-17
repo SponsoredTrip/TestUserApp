@@ -47,28 +47,30 @@ class BackendTester:
             self.results["errors"].append(f"{test_name}: {message}")
         print()
 
-    def test_sample_data_initialization(self):
-        """Test the init-data endpoint"""
-        print("🔄 Testing Sample Data Initialization...")
+    def test_comprehensive_sample_data_initialization(self):
+        """Test the init-data endpoint for comprehensive 100 agents"""
+        print("🔄 Testing Comprehensive Sample Data Initialization (100 Agents)...")
         
         try:
             response = requests.post(f"{self.base_url}/init-data", headers=self.headers, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                if "message" in data and "initialized successfully" in data["message"]:
-                    self.log_result("Sample Data Initialization", True, "Sample data created successfully")
+                if "message" in data and "100 agents" in data["message"]:
+                    self.log_result("Comprehensive Sample Data Initialization", True, 
+                                  "Sample data created successfully with 100 agents")
                     return True
                 else:
-                    self.log_result("Sample Data Initialization", False, f"Unexpected response format: {data}")
+                    self.log_result("Comprehensive Sample Data Initialization", False, 
+                                  f"Expected message about 100 agents, got: {data}")
                     return False
             else:
-                self.log_result("Sample Data Initialization", False, 
+                self.log_result("Comprehensive Sample Data Initialization", False, 
                               f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_result("Sample Data Initialization", False, f"Request failed: {str(e)}")
+            self.log_result("Comprehensive Sample Data Initialization", False, f"Request failed: {str(e)}")
             return False
 
     def test_user_registration(self):
