@@ -290,9 +290,11 @@ export default function Home() {
               style={styles.recommendationCard}
               onPress={() => router.push(`/agent-details?id=${agent!.id}`)}
             >
-              <View style={styles.agentImagePlaceholder}>
-                <Text style={styles.agentImageText}>{agent!.name[0]}</Text>
-              </View>
+              <Avatar 
+                avatar_id={agent!.avatar_id}
+                name={agent!.name}
+                size="medium"
+              />
               <Text style={styles.recommendationName} numberOfLines={1}>{agent!.name}</Text>
               <Text style={styles.recommendationRating}>⭐ {agent!.rating}</Text>
             </TouchableOpacity>
