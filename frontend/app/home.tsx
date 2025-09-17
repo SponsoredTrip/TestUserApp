@@ -542,6 +542,16 @@ const styles = StyleSheet.create({
   filterChipTextActive: {
     color: colors.textLight,
   },
+  advancedFilterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md + 4,
+  },
+  dropdownIcon: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginLeft: spacing.xs,
+  },
   recommendationCard: {
     width: 120,
     alignItems: 'center',
