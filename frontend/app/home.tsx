@@ -407,6 +407,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: 0,
   },
+  stickyFilterContainer: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primaryLight + '30',
+  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.md,
