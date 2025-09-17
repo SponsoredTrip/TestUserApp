@@ -147,7 +147,19 @@ export default function AgentDetails() {
     <View style={styles.packageCard}>
       <View style={styles.packageHeader}>
         <Text style={styles.packageTitle}>{item.title}</Text>
-        <Text style={styles.packagePrice}>₹{item.price.toLocaleString()}</Text>
+        <View style={styles.priceContainer}>
+          {item.is_sponsored && item.original_price && item.sponsored_price ? (
+            <>
+              <Text style={styles.originalPrice}>₹{item.original_price.toLocaleString()}</Text>
+              <Text style={styles.sponsoredPrice}>₹{item.sponsored_price.toLocaleString()}</Text>
+              {item.discount_percentage && (
+                <Text style={styles.discountBadge}>{item.discount_percentage}% OFF</Text>
+              )}
+            </>
+          ) : (
+            <Text style={styles.packagePrice}>₹{item.price.toLocaleString()}</Text>
+          )}
+        </View>
       </View>
       
       <Text style={styles.packageDescription}>{item.description}</Text>
@@ -166,12 +178,23 @@ export default function AgentDetails() {
         </View>
       )}
 
-      <TouchableOpacity
-        style={styles.bookButton}
-        onPress={() => handleBookPackage(item.id)}
-      >
-        <Text style={styles.bookButtonText}>Book Now</Text>
-      </TouchableOpacity>
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={styles.bookButton}
+          onPress={() => handleBookPackage(item.id)}
+        >
+          <Text style={styles.bookButtonText}>Book Now</Text>
+        </TouchableOpacity>
+        
+        {agent?.is_subscribed && (
+          <TouchableOpacity
+            style={styles.messageButton}
+            onPress={() => handleOpenChat(item)}
+          >
+            <Text style={styles.messageButtonText}>💬 Message</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 
