@@ -669,7 +669,12 @@ class BackendTester:
             self.test_get_packages,
             self.test_get_ribbons,
             self.test_create_booking,
-            self.test_get_user_bookings
+            self.test_get_user_bookings,
+            # Budget Travel API Tests
+            self.test_enhanced_sample_data,
+            self.test_budget_travel_preview,
+            self.test_budget_travel_search_goa_example,
+            self.test_budget_travel_edge_cases
         ]
         
         for test_func in test_sequence:
