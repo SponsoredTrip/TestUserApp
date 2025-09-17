@@ -1445,49 +1445,48 @@ class BackendTester:
         print("=" * 80)
         print(f"Testing against: {self.base_url}")
         print()
-        print("🔍 PRIORITY VALIDATION TESTS:")
-        print("1. Budget Travel Groups Click - Fixed destination group click handlers")
-        print("2. Advanced Filter Date Picker - Fixed DateTimePicker positioning")  
-        print("3. Logo Integration - Added new SponsoredTrip logo to loading screen")
-        print("4. Agent Avatar Images - Added professional avatar images for all agents")
+        print("🔍 CRITICAL BUG FIXES VALIDATION:")
+        print("1. SponsoredTrip Logo Not Loading - Fixed tintColor issue (UI-only, not tested)")
+        print("2. Advanced Filter Date Picker Not Working - Enhanced DateTimePicker (UI-only, not tested)")  
+        print("3. User Profile Photo Not Loading - Added avatar_id to User model (BACKEND TESTING)")
+        print()
+        print("🎯 PRIORITY BACKEND TESTS:")
+        print("• User Registration with Avatar - POST /api/auth/register assigns random avatar_id")
+        print("• User Login Returns Avatar - POST /api/auth/login includes avatar_id in response")
+        print("• Current User Includes Avatar - GET /api/auth/me includes avatar_id")
+        print("• Backend Service Stability - All existing APIs working after User model changes")
         print()
         
-        # Test sequence focused on validation priorities from review request
+        # Test sequence focused on CRITICAL BUG FIX validation from review request
         test_sequence = [
             # Initialize comprehensive data first
             self.test_comprehensive_sample_data_initialization,
             
-            # PRIORITY VALIDATION TESTS (from review request)
-            # 1. Budget Travel API validation
-            self.test_budget_travel_preview,  # GET /api/budget-travel/preview
-            self.test_budget_travel_destination_groups,  # Destination groups click handlers
-            self.test_enhanced_budget_travel_algorithm,  # POST /api/budget-travel with destination
+            # CRITICAL BUG FIX VALIDATION: User Profile Photo (avatar_id functionality)
+            self.test_user_registration_with_avatar,  # NEW: Test avatar assignment in registration
+            self.test_user_login_returns_avatar,      # NEW: Test avatar_id in login response
+            self.test_current_user_includes_avatar,   # NEW: Test avatar_id in /me endpoint
             
-            # 2. Backend Data Enhancement validation
-            self.test_avatar_id_validation,  # Verify avatar_id field in all agents
-            self.test_comprehensive_agent_count_verification,  # Verify 100 agents created
+            # Backend Service Stability - verify existing functionality still works
+            self.test_user_registration,  # Original registration test
+            self.test_user_login,         # Original login test  
+            self.test_get_current_user,   # Original current user test
             
-            # 3. Sponsored Filter & Chat APIs validation
-            self.test_sponsored_filter_fix,  # GET /api/agents?agent_type=sponsored (CRITICAL FIX)
+            # Verify all existing APIs still working after User model changes
+            self.test_comprehensive_agent_count_verification,
+            self.test_sponsored_filter_fix,  # Critical fix validation
+            self.test_phase2_chat_api,       # Chat functionality validation
+            self.test_sponsored_pricing_verification,
+            self.test_get_packages,
             
-            # Authentication tests (needed for chat API)
-            self.test_user_registration,
-            self.test_user_login,
-            self.test_get_current_user,
-            
-            # Chat API validation
-            self.test_phase2_chat_api,  # POST /api/chat/send + GET /api/chat/{package_id}
-            
-            # 4. Package Data with Sponsored Pricing validation
-            self.test_sponsored_pricing_verification,  # GET /api/packages with discount fields
-            
-            # Additional validation tests
+            # Additional backend stability tests
+            self.test_avatar_id_validation,  # Verify agents have avatar_id
             self.test_phase1_filter_options_structure,
             self.test_phase2_subscription_status,
             self.test_phase2_recommended_section,
-            self.test_get_packages,
-            self.test_budget_travel_ribbon_integration,
-            self.test_enhanced_sample_data
+            self.test_budget_travel_preview,
+            self.test_enhanced_budget_travel_algorithm,
+            self.test_budget_travel_ribbon_integration
         ]
         
         for test_func in test_sequence:
