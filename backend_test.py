@@ -637,6 +637,278 @@ class BackendTester:
             self.log_result("Budget Travel Edge Cases", False, f"Request failed: {str(e)}")
             return False
 
+    def test_phase1_filter_options_structure(self):
+        """Test Phase 1: Filter Options Fix - verify new filter structure"""
+        print("🔄 Testing Phase 1: Filter Options Structure...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/ribbons", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                ribbons = response.json()
+                filter_ribbons = [r for r in ribbons if r["type"] == "filter"]
+                
+                if filter_ribbons:
+                    filter_ribbon = filter_ribbons[0]
+                    items = filter_ribbon.get("items", [])
+                    
+                    # Expected filter options from review request
+                    expected_filters = ["Travel", "Transport", "Sponsored", "Goa", "Himachal", "Uttarakhand"]
+                    found_filters = [item.get("name") for item in items]
+                    
+                    # Check if all expected filters are present
+                    missing_filters = [f for f in expected_filters if f not in found_filters]
+                    
+                    if not missing_filters:
+                        # Verify each item has required fields
+                        all_valid = True
+                        for item in items:
+                            if not all(field in item for field in ["name", "value", "icon"]):
+                                all_valid = False
+                                break
+                        
+                        if all_valid:
+                            self.log_result("Phase 1: Filter Options Structure", True, 
+                                          f"All expected filters found: {found_filters}")
+                            return True
+                        else:
+                            self.log_result("Phase 1: Filter Options Structure", False, 
+                                          "Some filter items missing required fields (name, value, icon)")
+                            return False
+                    else:
+                        self.log_result("Phase 1: Filter Options Structure", False, 
+                                      f"Missing expected filters: {missing_filters}")
+                        return False
+                else:
+                    self.log_result("Phase 1: Filter Options Structure", False, 
+                                  "No filter ribbon found")
+                    return False
+            else:
+                self.log_result("Phase 1: Filter Options Structure", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 1: Filter Options Structure", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_phase2_subscription_status(self):
+        """Test Phase 2: Subscription Status - verify agents have subscription fields"""
+        print("🔄 Testing Phase 2: Subscription Status...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/agents", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                agents = response.json()
+                if agents:
+                    # Check if agents have subscription fields
+                    subscription_fields = ["is_subscribed", "subscription_type"]
+                    first_agent = agents[0]
+                    
+                    if all(field in first_agent for field in subscription_fields):
+                        # Count subscribed agents
+                        subscribed_agents = [a for a in agents if a.get("is_subscribed", False)]
+                        
+                        # Based on the code, every 4th travel and every 5th transport should be subscribed
+                        # With 50 travel and 50 transport agents, we expect ~25 subscribed agents
+                        expected_subscribed = 25  # Approximate
+                        actual_subscribed = len(subscribed_agents)
+                        
+                        if actual_subscribed >= 20 and actual_subscribed <= 30:  # Allow some variance
+                            # Test filtering by subscription status
+                            subscribed_response = requests.get(
+                                f"{self.base_url}/agents", 
+                                headers=self.headers, 
+                                timeout=10
+                            )
+                            
+                            if subscribed_response.status_code == 200:
+                                all_agents = subscribed_response.json()
+                                subscribed_count = len([a for a in all_agents if a.get("is_subscribed", False)])
+                                
+                                self.log_result("Phase 2: Subscription Status", True, 
+                                              f"Found {subscribed_count} subscribed agents with proper subscription fields")
+                                return True
+                            else:
+                                self.log_result("Phase 2: Subscription Status", False, 
+                                              f"Failed to retrieve agents for subscription filtering")
+                                return False
+                        else:
+                            self.log_result("Phase 2: Subscription Status", False, 
+                                          f"Unexpected number of subscribed agents: {actual_subscribed} (expected ~25)")
+                            return False
+                    else:
+                        self.log_result("Phase 2: Subscription Status", False, 
+                                      f"Missing subscription fields in agents: {subscription_fields}")
+                        return False
+                else:
+                    self.log_result("Phase 2: Subscription Status", False, "No agents found")
+                    return False
+            else:
+                self.log_result("Phase 2: Subscription Status", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 2: Subscription Status", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_phase2_recommended_section(self):
+        """Test Phase 2: Recommended Section - verify shows subscribed agents"""
+        print("🔄 Testing Phase 2: Recommended Section...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/ribbons", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                ribbons = response.json()
+                recommended_ribbons = [r for r in ribbons if r["type"] == "recommendation"]
+                
+                if recommended_ribbons:
+                    recommended_ribbon = recommended_ribbons[0]
+                    items = recommended_ribbon.get("items", [])
+                    
+                    if items:
+                        # Verify items have agent fields
+                        required_fields = ["agent_id", "name", "type", "rating", "location"]
+                        first_item = items[0]
+                        
+                        if all(field in first_item for field in required_fields):
+                            # Verify these are actually subscribed agents
+                            agent_ids = [item["agent_id"] for item in items]
+                            
+                            # Get agents to verify subscription status
+                            agents_response = requests.get(f"{self.base_url}/agents", headers=self.headers, timeout=10)
+                            if agents_response.status_code == 200:
+                                all_agents = agents_response.json()
+                                agent_lookup = {a["id"]: a for a in all_agents}
+                                
+                                # Check if recommended agents are subscribed
+                                subscribed_count = 0
+                                for agent_id in agent_ids:
+                                    if agent_id in agent_lookup and agent_lookup[agent_id].get("is_subscribed", False):
+                                        subscribed_count += 1
+                                
+                                if subscribed_count == len(agent_ids):
+                                    self.log_result("Phase 2: Recommended Section", True, 
+                                                  f"All {len(items)} recommended agents are subscribed")
+                                    return True
+                                else:
+                                    self.log_result("Phase 2: Recommended Section", False, 
+                                                  f"Only {subscribed_count}/{len(agent_ids)} recommended agents are subscribed")
+                                    return False
+                            else:
+                                self.log_result("Phase 2: Recommended Section", False, 
+                                              "Could not verify agent subscription status")
+                                return False
+                        else:
+                            self.log_result("Phase 2: Recommended Section", False, 
+                                          f"Missing required fields in recommended items: {required_fields}")
+                            return False
+                    else:
+                        self.log_result("Phase 2: Recommended Section", False, 
+                                      "No items in recommended ribbon")
+                        return False
+                else:
+                    self.log_result("Phase 2: Recommended Section", False, 
+                                  "No recommendation ribbon found")
+                    return False
+            else:
+                self.log_result("Phase 2: Recommended Section", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 2: Recommended Section", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_phase2_chat_api(self):
+        """Test Phase 2: Chat API - test send and retrieve messages"""
+        print("🔄 Testing Phase 2: Chat API...")
+        
+        if not self.auth_token:
+            self.log_result("Phase 2: Chat API", False, "No auth token available")
+            return False
+        
+        try:
+            # First get a package ID
+            packages_response = requests.get(f"{self.base_url}/packages", headers=self.headers, timeout=10)
+            if packages_response.status_code != 200:
+                self.log_result("Phase 2: Chat API", False, "Could not retrieve packages for chat test")
+                return False
+            
+            packages = packages_response.json()
+            if not packages:
+                self.log_result("Phase 2: Chat API", False, "No packages available for chat test")
+                return False
+            
+            package_id = packages[0]["id"]
+            test_message = "Hello, I'm interested in this package. Can you provide more details?"
+            
+            # Test sending message
+            chat_request = {
+                "package_id": package_id,
+                "message": test_message
+            }
+            
+            send_response = requests.post(
+                f"{self.base_url}/chat/send",
+                headers=self.headers,
+                json=chat_request,
+                timeout=10
+            )
+            
+            if send_response.status_code == 200:
+                send_data = send_response.json()
+                if "message" in send_data and "chat_id" in send_data:
+                    # Test retrieving messages
+                    get_response = requests.get(
+                        f"{self.base_url}/chat/{package_id}",
+                        headers=self.headers,
+                        timeout=10
+                    )
+                    
+                    if get_response.status_code == 200:
+                        messages = get_response.json()
+                        if isinstance(messages, list) and len(messages) > 0:
+                            # Find our test message
+                            test_message_found = any(
+                                msg.get("message") == test_message and 
+                                msg.get("package_id") == package_id and
+                                msg.get("sender_type") == "user"
+                                for msg in messages
+                            )
+                            
+                            if test_message_found:
+                                self.log_result("Phase 2: Chat API", True, 
+                                              f"Successfully sent and retrieved chat message for package {package_id}")
+                                return True
+                            else:
+                                self.log_result("Phase 2: Chat API", False, 
+                                              "Test message not found in retrieved messages")
+                                return False
+                        else:
+                            self.log_result("Phase 2: Chat API", False, 
+                                          "No messages retrieved or invalid format")
+                            return False
+                    else:
+                        self.log_result("Phase 2: Chat API", False, 
+                                      f"Failed to retrieve messages: HTTP {get_response.status_code}")
+                        return False
+                else:
+                    self.log_result("Phase 2: Chat API", False, 
+                                  f"Unexpected send response format: {send_data}")
+                    return False
+            else:
+                self.log_result("Phase 2: Chat API", False, 
+                              f"Failed to send message: HTTP {send_response.status_code}: {send_response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 2: Chat API", False, f"Request failed: {str(e)}")
+            return False
+
     def test_enhanced_sample_data(self):
         """Test that enhanced sample data includes new fields for budget travel"""
         print("🔄 Testing Enhanced Sample Data...")
