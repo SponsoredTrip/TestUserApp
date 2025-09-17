@@ -116,7 +116,21 @@ export default function Home() {
     let filtered = agents;
     
     if (selectedFilter !== 'all') {
-      filtered = agents.filter(agent => agent.type === selectedFilter);
+      // Handle agent type filters
+      if (selectedFilter === 'travel' || selectedFilter === 'transport') {
+        filtered = agents.filter(agent => agent.type === selectedFilter);
+      }
+      // Handle sponsored filter (for Phase 2)
+      else if (selectedFilter === 'sponsored') {
+        filtered = agents.filter(agent => agent.is_subscribed === true);
+      }
+      // Handle location-based filters
+      else if (['goa', 'himachal', 'uttarakhand'].includes(selectedFilter)) {
+        filtered = agents.filter(agent => 
+          agent.location.toLowerCase().includes(selectedFilter) ||
+          agent.location.toLowerCase().includes(selectedFilter === 'himachal' ? 'shimla' : selectedFilter === 'uttarakhand' ? 'dehradun' : 'goa')
+        );
+      }
     }
     
     if (searchQuery) {
