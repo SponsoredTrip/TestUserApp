@@ -165,6 +165,7 @@ def generate_comprehensive_sample_data():
             "contact_phone": f"+91-8{i:03d}{(i*5)%1000:03d}{(i*13)%100:02d}",
             "contact_email": f"{transport_agent_names[i].lower().replace(' ', '').replace('&', 'and')}@transport.com",
             "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "avatar_id": AVATAR_IDS[i % len(AVATAR_IDS)],
             "services_offered": transport_services[i % len(transport_services)],
             "is_subscribed": is_subscribed,
             "subscription_type": subscription_type,
