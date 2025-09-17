@@ -297,11 +297,12 @@ export default function Home() {
       </Card>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Dynamic Ribbons */}
-        {ribbons.map(ribbon => {
+        {/* Filter Ribbon - Always show first and make it sticky */}
+        {ribbons.filter(ribbon => ribbon.type === 'filter').map(ribbon => renderFilterRibbon(ribbon))}
+        
+        {/* Other Dynamic Ribbons */}
+        {ribbons.filter(ribbon => ribbon.type !== 'filter').map(ribbon => {
           switch (ribbon.type) {
-            case 'filter':
-              return renderFilterRibbon(ribbon);
             case 'recommendation':
               return renderRecommendationRibbon(ribbon);
             case 'explore':
