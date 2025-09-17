@@ -351,9 +351,12 @@ export default function Home() {
         style={styles.agentCardContent}
         onPress={() => router.push(`/agent-details?id=${item.id}`)}
       >
-        <View style={styles.agentImagePlaceholder}>
-          <Text style={styles.agentImageText}>{item.name[0]}</Text>
-        </View>
+        <Avatar 
+          avatar_id={item.avatar_id}
+          name={item.name}
+          size="medium"
+          style={styles.agentAvatar}
+        />
         <View style={styles.agentInfo}>
           <Text style={styles.agentName}>{item.name}</Text>
           <Text style={styles.agentDescription} numberOfLines={2}>{item.description}</Text>
