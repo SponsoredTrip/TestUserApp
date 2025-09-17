@@ -48,6 +48,14 @@ export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<FilterOptions>({
+    sortBy: 'relevance',
+    dateFrom: null,
+    dateTo: null,
+    rating: 'all',
+    sponsored: 'all',
+  });
 
   useEffect(() => {
     loadInitialData();
