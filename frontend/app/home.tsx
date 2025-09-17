@@ -10,10 +10,14 @@ import {
   Alert,
   FlatList,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { colors, layout, spacing, typography, shadows, radius, brand } from '../constants/theme';
+import { Card } from '../components/UI/Card';
+import { Button } from '../components/UI/Button';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -124,6 +128,207 @@ export default function Home() {
     
     return filtered;
   };
+
+  const handleExploreItemPress = (item: any) => {
+    if (item.action === 'budget_travel') {
+      router.push('/budget-travel');
+    } else {
+      Alert.alert('Coming Soon', `${item.category} feature will be available soon!`);
+    }
+  };
+
+  const renderFilterRibbon = (ribbon: RibbonContent) => {
+    if (ribbon.type !== 'filter') return null;
+    
+    return (
+      <Card key={ribbon.id} style={styles.ribbonCard}>
+        <Text style={styles.ribbonTitle}>{ribbon.title}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+          <TouchableOpacity
+            style={[styles.filterChip, selectedFilter === 'all' && styles.filterChipActive]}
+            onPress={() => setSelectedFilter('all')}
+          >
+            <Text style={[styles.filterChipText, selectedFilter === 'all' && styles.filterChipTextActive]}>
+              All
+            </Text>
+          </TouchableOpacity>
+          {ribbon.items.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.filterChip, selectedFilter === item.value && styles.filterChipActive]}
+              onPress={() => setSelectedFilter(item.value)}
+            >
+              <Text style={styles.filterIcon}>{item.icon}</Text>
+              <Text style={[styles.filterChipText, selectedFilter === item.value && styles.filterChipTextActive]}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </Card>
+    );
+  };
+
+  const renderRecommendationRibbon = (ribbon: RibbonContent) => {
+    if (ribbon.type !== 'recommendation') return null;
+    
+    const recommendedAgents = ribbon.items.map(item => 
+      agents.find(agent => agent.id === item.agent_id)
+    ).filter(Boolean);
+
+    return (
+      <Card key={ribbon.id} style={styles.ribbonCard}>
+        <Text style={styles.ribbonTitle}>{ribbon.title}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {recommendedAgents.map((agent) => (
+            <TouchableOpacity 
+              key={agent!.id} 
+              style={styles.recommendationCard}
+              onPress={() => router.push(`/agent-details?id=${agent!.id}`)}
+            >
+              <View style={styles.agentImagePlaceholder}>
+                <Text style={styles.agentImageText}>{agent!.name[0]}</Text>
+              </View>
+              <Text style={styles.recommendationName} numberOfLines={1}>{agent!.name}</Text>
+              <Text style={styles.recommendationRating}>⭐ {agent!.rating}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </Card>
+    );
+  };
+
+  const renderExploreRibbon = (ribbon: RibbonContent) => {
+    if (ribbon.type !== 'explore') return null;
+    
+    return (
+      <Card key={ribbon.id} style={styles.ribbonCard}>
+        <Text style={styles.ribbonTitle}>{ribbon.title}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {ribbon.items.map((item, index) => (
+            <TouchableOpacity 
+              key={index} 
+              style={styles.exploreCard}
+              onPress={() => handleExploreItemPress(item)}
+            >
+              <Text style={styles.exploreIcon}>{item.image}</Text>
+              <Text style={styles.exploreName}>{item.category}</Text>
+              <Text style={styles.exploreCount}>{item.count} options</Text>
+              {item.action === 'budget_travel' && (
+                <View style={styles.budgetBadge}>
+                  <Text style={styles.budgetBadgeText}>NEW</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </Card>
+    );
+  };
+
+  const renderAgentCard = ({ item }: { item: Agent }) => (
+    <Card style={styles.agentCard}>
+      <TouchableOpacity 
+        style={styles.agentCardContent}
+        onPress={() => router.push(`/agent-details?id=${item.id}`)}
+      >
+        <View style={styles.agentImagePlaceholder}>
+          <Text style={styles.agentImageText}>{item.name[0]}</Text>
+        </View>
+        <View style={styles.agentInfo}>
+          <Text style={styles.agentName}>{item.name}</Text>
+          <Text style={styles.agentDescription} numberOfLines={2}>{item.description}</Text>
+          <Text style={styles.agentLocation}>📍 {item.location}</Text>
+          <View style={styles.agentStats}>
+            <Text style={styles.agentRating}>⭐ {item.rating}</Text>
+            <Text style={styles.agentBookings}>{item.total_bookings} bookings</Text>
+            <View style={[styles.agentTypeBadge, 
+              item.type === 'travel' ? styles.travelBadge : styles.transportBadge
+            ]}>
+              <Text style={styles.agentTypeText}>
+                {item.type === 'travel' ? '🏔️ Travel' : '🚗 Transport'}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Card>
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Image source={require('../assets/logo.png')} style={styles.loadingLogo} />
+          <ActivityIndicator size="large" color={colors.primary} style={styles.loadingSpinner} />
+          <Text style={styles.loadingText}>Loading {brand.name}...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" backgroundColor={colors.background} />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image source={require('../assets/logo.png')} style={styles.headerLogo} />
+          <View>
+            <Text style={styles.welcomeText}>Welcome,</Text>
+            <Text style={styles.userName}>{user?.username || 'User'}</Text>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Search Bar */}
+      <Card style={styles.searchCard}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search agents, locations..."
+          placeholderTextColor={colors.textSecondary}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </Card>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Dynamic Ribbons */}
+        {ribbons.map(ribbon => {
+          switch (ribbon.type) {
+            case 'filter':
+              return renderFilterRibbon(ribbon);
+            case 'recommendation':
+              return renderRecommendationRibbon(ribbon);
+            case 'explore':
+              return renderExploreRibbon(ribbon);
+            default:
+              return null;
+          }
+        })}
+
+        {/* Agents List */}
+        <View style={styles.agentsSection}>
+          <Text style={styles.sectionTitle}>
+            {selectedFilter === 'all' ? 'All Agents' : 
+             selectedFilter === 'travel' ? 'Travel Agents' : 'Transport Agents'}
+          </Text>
+          <FlatList
+            data={filterAgents()}
+            renderItem={renderAgentCard}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
   const renderFilterRibbon = (ribbon: RibbonContent) => {
     if (ribbon.type !== 'filter') return null;
