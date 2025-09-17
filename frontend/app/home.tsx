@@ -448,13 +448,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   stickyFilterContainer: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xs,
+    paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.primaryLight + '30',
+    ...shadows.small,
+    position: 'relative',
+    zIndex: 100,
   },
-  content: {
+  stickyFilterContent: {
+    backgroundColor: colors.surface,
+  },
+  stickyFilterTitle: {
+    ...typography.h4,
+    marginBottom: spacing.sm,
+  },
+  scrollableContent: {
     flex: 1,
     paddingHorizontal: spacing.md,
   },
