@@ -544,6 +544,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userAvatar: {
+    marginRight: spacing.sm,
+  },
   headerLogo: {
     width: brand.logoSize.medium,
     height: brand.logoSize.medium,
