@@ -519,6 +519,49 @@ async def get_budget_travel_preview():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting budget preview: {str(e)}")
 
+# Chat Routes
+@api_router.post("/chat/send")
+async def send_chat_message(request: ChatRequest, current_user: dict = Depends(get_current_user)):
+    """Send a message in package chat"""
+    try:
+        # Get package details to find agent_id
+        package = await db.packages.find_one({"id": request.package_id})
+        if not package:
+            raise HTTPException(status_code=404, detail="Package not found")
+        
+        # Create chat message
+        chat_message = ChatMessage(
+            user_id=current_user["id"],
+            package_id=request.package_id,
+            agent_id=package["agent_id"],
+            message=request.message,
+            sender_type="user"
+        )
+        
+        # Save to database
+        await db.chat_messages.insert_one(chat_message.dict())
+        
+        return {"message": "Message sent successfully", "chat_id": chat_message.id}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending message: {str(e)}")
+
+@api_router.get("/chat/{package_id}")
+async def get_chat_messages(package_id: str, current_user: dict = Depends(get_current_user)):
+    """Get chat messages for a package"""
+    try:
+        messages = await db.chat_messages.find({
+            "package_id": package_id,
+            "user_id": current_user["id"]
+        }).sort("timestamp", 1).to_list(100)
+        
+        return [ChatMessage(**msg) for msg in messages]
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting messages: {str(e)}")
+
 async def populate_sample_data():
     """Populate the database with comprehensive sample data"""
     
