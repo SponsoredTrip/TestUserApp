@@ -520,6 +520,125 @@ async def populate_sample_data():
     # Select some agent IDs for packages
     travel_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'travel'][:10]
     transport_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'transport'][:5]
+    
+    # Create comprehensive packages
+    packages = []
+    
+    # Goa packages (for budget travel testing)
+    goa_packages = [
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_ids[0],
+            "title": "Beach Adventure Goa",
+            "description": "Exciting beach activities and water sports in Goa",
+            "price": 10000,
+            "duration": "3 days 2 nights",
+            "duration_days": 3,
+            "destination": "Goa",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Beach Access", "Water Sports", "Sunset Views", "Local Cuisine"],
+            "latitude": 15.2993,
+            "longitude": 74.1240,
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_ids[1],
+            "title": "Heritage Tour Goa",
+            "description": "Explore the rich Portuguese heritage and culture of Goa",
+            "price": 8000,
+            "duration": "2 days 1 night",
+            "duration_days": 2,
+            "destination": "Goa",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Historical Sites", "Churches", "Museums", "Cultural Shows"],
+            "latitude": 15.2993,
+            "longitude": 74.1240,
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        }
+    ]
+    
+    # Add more diverse packages
+    destinations = ["Mumbai", "Delhi", "Bangalore", "Chennai", "Jaipur", "Kerala", "Shimla", "Manali", "Rajasthan"]
+    package_titles = [
+        "City Explorer", "Cultural Heritage", "Adventure Trek", "Wildlife Safari", "Beach Paradise",
+        "Mountain Retreat", "Desert Safari", "Spiritual Journey", "Food Tour", "Photography Expedition"
+    ]
+    
+    for i, agent_id in enumerate(travel_agent_ids):
+        for j in range(3):  # 3 packages per agent
+            package_id = str(uuid.uuid4())
+            destination = destinations[i % len(destinations)]
+            title = f"{package_titles[j % len(package_titles)]} {destination}"
+            
+            packages.append({
+                "id": package_id,
+                "agent_id": agent_id,
+                "title": title,
+                "description": f"Amazing {title.lower()} experience with professional guides",
+                "price": 5000 + (i * 1000) + (j * 500),
+                "duration": f"{2 + j} days {1 + j} nights",
+                "duration_days": 2 + j,
+                "destination": destination,
+                "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+                "features": ["Professional Guide", "Accommodation", "Meals", "Transportation"],
+                "latitude": 20.5937 + (i * 0.1),
+                "longitude": 78.9629 + (i * 0.1),
+                "is_active": True,
+                "created_at": datetime.utcnow()
+            })
+    
+    # Add Goa packages
+    packages.extend(goa_packages)
+    
+    # Insert packages
+    await db.packages.insert_many(packages)
+    
+    # Create ribbons
+    ribbons = [
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Filter Options",
+            "type": "filter",
+            "items": [
+                {"category": "Travel Type", "options": ["Adventure", "Cultural", "Beach", "Mountain"]},
+                {"category": "Budget", "options": ["Budget", "Mid-range", "Luxury"]},
+                {"category": "Duration", "options": ["1-3 days", "4-7 days", "1-2 weeks"]}
+            ],
+            "order": 1,
+            "is_active": True
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Recommended",
+            "type": "recommendation",
+            "items": [
+                {"category": "Popular Destinations", "title": "Goa Beach Paradise", "action": "view_packages"},
+                {"category": "Trending", "title": "Rajasthan Heritage", "action": "view_packages"},
+                {"category": "Best Value", "title": "Kerala Backwaters", "action": "view_packages"}
+            ],
+            "order": 2,
+            "is_active": True
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Explore More",
+            "type": "explore",
+            "items": [
+                {"category": "Budget Travel", "title": "Find Best Deals", "action": "budget_travel"},
+                {"category": "Adventure", "title": "Trekking & Hiking", "action": "view_adventure"},
+                {"category": "Cultural", "title": "Heritage Tours", "action": "view_cultural"},
+                {"category": "Wellness", "title": "Spa & Yoga", "action": "view_wellness"}
+            ],
+            "order": 3,
+            "is_active": True
+        }
+    ]
+    
+    # Insert ribbons
+    await db.ribbons.insert_many(ribbons)
 
 # Initialize sample data
 @api_router.post("/init-data")
