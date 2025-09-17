@@ -694,7 +694,7 @@ async def initialize_sample_data():
         # Swift Cabs packages (enhanced)
         {
             "id": str(uuid.uuid4()),
-            "agent_id": transport_agent_1_id,
+            "agent_id": transport_agent_ids[0] if transport_agent_ids else str(uuid.uuid4()),
             "title": "Airport Transfer Service",
             "description": "Reliable airport pickup and drop service with professional drivers",
             "price": 800,
