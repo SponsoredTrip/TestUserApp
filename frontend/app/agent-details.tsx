@@ -547,10 +547,28 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
   },
   bookButtonText: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  messageButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    flex: 1,
+  },
+  messageButtonText: {
+    color: 'white',
+    fontSize: 14,
     fontWeight: 'bold',
   },
   noPackagesContainer: {
