@@ -152,6 +152,7 @@ export default function Home() {
       if (agentsResponse.ok) {
         const agentsData = await agentsResponse.json();
         setAgents(agentsData);
+        setFilteredAgents(agentsData); // Initialize filtered agents
       }
 
       // Load ribbons
