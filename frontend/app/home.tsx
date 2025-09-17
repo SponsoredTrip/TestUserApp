@@ -129,8 +129,10 @@ export default function Home() {
       if (selectedFilter === 'travel' || selectedFilter === 'transport') {
         filtered = agents.filter(agent => agent.type === selectedFilter);
       }
-      // Handle sponsored filter (for Phase 2)
+      // Handle sponsored filter - show agents who have sponsored packages
       else if (selectedFilter === 'sponsored') {
+        // For now, show subscribed agents as they are likely to have sponsored packages
+        // In a real implementation, we'd check which agents have packages with is_sponsored=true
         filtered = agents.filter(agent => agent.is_subscribed === true);
       }
       // Handle location-based filters
