@@ -393,6 +393,18 @@ export default function Home() {
           />
         </View>
       </ScrollView>
+
+      {/* Advanced Filter Modal */}
+      <AdvancedFilterModal
+        visible={showAdvancedFilter}
+        onClose={() => setShowAdvancedFilter(false)}
+        onApplyFilters={(filters) => {
+          setAdvancedFilters(filters);
+          // Apply filters logic here
+          console.log('Applied filters:', filters);
+        }}
+        currentFilters={advancedFilters}
+      />
     </SafeAreaView>
   );
 }
