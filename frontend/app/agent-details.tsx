@@ -370,6 +370,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  agentAvatar: {
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
   agentImagePlaceholder: {
     width: 100,
     height: 100,
