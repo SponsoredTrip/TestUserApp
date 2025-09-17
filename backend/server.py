@@ -135,6 +135,20 @@ class BudgetTravelResponse(BaseModel):
     total_combinations_found: int
     message: str
 
+class ChatMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    package_id: str
+    agent_id: str
+    message: str
+    sender_type: str  # "user" or "agent"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    is_read: bool = False
+
+class ChatRequest(BaseModel):
+    package_id: str
+    message: str
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
