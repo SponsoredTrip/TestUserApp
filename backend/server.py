@@ -526,10 +526,7 @@ async def populate_sample_data():
 async def initialize_sample_data():
     """Initialize the database with comprehensive sample data"""
     await populate_sample_data()
-    return {"message": "Sample data initialized successfully with 100 agents and comprehensive packages"}
-    await db.agents.delete_many({})
-    await db.packages.delete_many({})
-    await db.ribbons.delete_many({})
+
     
     # Sample Travel Agents
     travel_agent_1_id = str(uuid.uuid4())
