@@ -32,6 +32,7 @@ interface Agent {
   contact_email: string;
   is_subscribed?: boolean;
   subscription_type?: string;
+  avatar_id?: string;
 }
 
 interface Package {
