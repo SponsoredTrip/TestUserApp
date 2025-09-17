@@ -661,7 +661,7 @@ async def initialize_sample_data():
         # Royal Rajasthan Tours packages
         {
             "id": str(uuid.uuid4()),
-            "agent_id": travel_agent_2_id,
+            "agent_id": travel_agent_ids[1] if len(travel_agent_ids) > 1 else str(uuid.uuid4()),
             "title": "Golden Triangle Heritage Tour",
             "description": "Classic 7-day tour covering Delhi, Agra, and Jaipur with heritage hotels and cultural experiences",
             "price": 25000,
