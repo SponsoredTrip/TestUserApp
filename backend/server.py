@@ -74,6 +74,7 @@ class Agent(BaseModel):
     contact_phone: str
     contact_email: str
     image_base64: str
+    services_offered: List[str] = []
     is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
