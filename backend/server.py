@@ -112,6 +112,26 @@ class Booking(BaseModel):
     total_amount: float
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class BudgetTravelRequest(BaseModel):
+    budget: float
+    num_persons: int
+    num_days: int
+    place: Optional[str] = None
+
+class PackageCombination(BaseModel):
+    packages: List[dict]  # List of package details with pricing
+    transport_segments: List[dict]  # List of transport between packages
+    total_cost: float
+    total_days: int
+    savings: float  # How much budget is left
+    itinerary_summary: str
+
+class BudgetTravelResponse(BaseModel):
+    request: BudgetTravelRequest
+    combinations: List[PackageCombination]
+    total_combinations_found: int
+    message: str
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
