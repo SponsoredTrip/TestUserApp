@@ -668,7 +668,7 @@ async def initialize_sample_data():
             "is_active": True,
             "created_at": datetime.utcnow()
         },
-        # Swift Cabs packages
+        # Swift Cabs packages (enhanced)
         {
             "id": str(uuid.uuid4()),
             "agent_id": transport_agent_1_id,
@@ -676,7 +676,10 @@ async def initialize_sample_data():
             "description": "Reliable airport pickup and drop service with professional drivers",
             "price": 800,
             "duration": "1 way trip",
+            "duration_days": 1,
             "destination": "Any Airport",
+            "latitude": 28.5562,
+            "longitude": 77.1000,
             "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
             "features": ["AC car", "Professional driver", "24/7 availability", "GPS tracking", "Toll included"],
             "is_active": True,
