@@ -586,7 +586,11 @@ async def initialize_sample_data():
     # Insert agents
     await db.agents.insert_many(travel_agents + transport_agents)
     
-    # Sample Packages
+    # Create dynamic agent ID lists
+    travel_agent_ids = [agent['id'] for agent in travel_agents]
+    transport_agent_ids = [agent['id'] for agent in transport_agents]
+    
+    # Sample Packages using dynamic agent IDs
     packages = [
         # Adventure Tours India packages
         {
