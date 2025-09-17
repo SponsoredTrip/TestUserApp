@@ -183,35 +183,6 @@ export const AdvancedFilterModal: React.FC<AdvancedFilterModalProps> = ({
             filters.sponsored,
             (value) => setFilters({ ...filters, sponsored: value })
           )}
-
-          {/* Date Pickers */}
-          {showFromDatePicker && (
-            <DateTimePicker
-              value={filters.dateFrom || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowFromDatePicker(false);
-                if (selectedDate) {
-                  setFilters({ ...filters, dateFrom: selectedDate });
-                }
-              }}
-            />
-          )}
-
-          {showToDatePicker && (
-            <DateTimePicker
-              value={filters.dateTo || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowToDatePicker(false);
-                if (selectedDate) {
-                  setFilters({ ...filters, dateTo: selectedDate });
-                }
-              }}
-            />
-          )}
         </ScrollView>
 
         {/* Footer */}
@@ -222,6 +193,35 @@ export const AdvancedFilterModal: React.FC<AdvancedFilterModalProps> = ({
             style={styles.applyButton}
           />
         </View>
+
+        {/* Date Pickers - Outside ScrollView */}
+        {showFromDatePicker && (
+          <DateTimePicker
+            value={filters.dateFrom || new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={(event, selectedDate) => {
+              setShowFromDatePicker(false);
+              if (selectedDate) {
+                setFilters({ ...filters, dateFrom: selectedDate });
+              }
+            }}
+          />
+        )}
+
+        {showToDatePicker && (
+          <DateTimePicker
+            value={filters.dateTo || new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={(event, selectedDate) => {
+              setShowToDatePicker(false);
+              if (selectedDate) {
+                setFilters({ ...filters, dateTo: selectedDate });
+              }
+            }}
+          />
+        )}
       </View>
     </Modal>
   );
