@@ -691,11 +691,7 @@ async def populate_sample_data():
             "id": str(uuid.uuid4()),
             "title": "Recommended",
             "type": "recommendation",
-            "items": [
-                {"category": "Popular Destinations", "title": "Goa Beach Paradise", "action": "view_packages"},
-                {"category": "Trending", "title": "Rajasthan Heritage", "action": "view_packages"},
-                {"category": "Best Value", "title": "Kerala Backwaters", "action": "view_packages"}
-            ],
+            "items": recommended_items,  # Dynamic subscribed agents
             "order": 2,
             "is_active": True
         },
