@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     width: brand.logoSize.large,
     height: brand.logoSize.large,
     marginBottom: spacing.md,
-    tintColor: colors.primary,
+    resizeMode: 'contain',
   },
   loadingSpinner: {
     marginVertical: spacing.md,
