@@ -86,6 +86,9 @@ class Package(BaseModel):
     title: str
     description: str
     price: float
+    original_price: Optional[float] = None  # For showing crossed-out price
+    discount_percentage: Optional[float] = None  # Discount percentage
+    sponsored_price: Optional[float] = None  # Final sponsored price
     duration: str
     duration_days: int = 0  # Parsed from duration string
     destination: str
@@ -93,6 +96,7 @@ class Package(BaseModel):
     features: List[str]
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+    is_sponsored: bool = False  # Whether this package has sponsored pricing
     is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
