@@ -33,6 +33,7 @@ interface Agent {
   image_base64: string;
   is_subscribed?: boolean;
   subscription_type?: string;
+  avatar_id?: string;
 }
 
 interface RibbonContent {
