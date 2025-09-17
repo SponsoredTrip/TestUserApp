@@ -422,7 +422,7 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#2196F3" />
+      <StatusBar style="dark" backgroundColor={colors.background} />
       
       {/* Header */}
       <View style={styles.header}>
