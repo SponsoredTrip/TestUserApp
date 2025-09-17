@@ -497,13 +497,30 @@ const styles = StyleSheet.create({
     ...shadows.small,
     position: 'relative',
   },
+  budgetTravelCard: {
+    backgroundColor: colors.primary + '10',
+    borderWidth: 2,
+    borderColor: colors.primary + '40',
+    ...shadows.medium,
+  },
   exploreIcon: {
     fontSize: 32,
     marginBottom: spacing.xs,
   },
+  budgetTravelIcon: {
+    fontSize: 40,
+    marginBottom: spacing.xs + 2,
+  },
   exploreName: {
     ...typography.body2,
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: spacing.xs / 2,
+  },
+  budgetTravelName: {
+    ...typography.body2,
+    fontWeight: 'bold',
+    color: colors.primary,
     textAlign: 'center',
     marginBottom: spacing.xs / 2,
   },
