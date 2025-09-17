@@ -328,7 +328,6 @@ export default function Home() {
       </ScrollView>
     </SafeAreaView>
   );
-}
 
   const renderFilterRibbon = (ribbon: RibbonContent) => {
     if (ribbon.type !== 'filter') return null;
