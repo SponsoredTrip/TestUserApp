@@ -97,6 +97,12 @@ export default function BudgetTravel() {
     }
   };
 
+  const handleDestinationGroupPress = (destination: string) => {
+    // Set the place filter and trigger search
+    setFormData({...formData, place: destination});
+    handleSearch();
+  };
+
   const handleSearch = async () => {
     if (!formData.budget || !formData.num_persons || !formData.num_days) {
       Alert.alert('Error', 'Please fill in all required fields');
