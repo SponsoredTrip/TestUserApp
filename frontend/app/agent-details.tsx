@@ -287,6 +287,14 @@ export default function AgentDetails() {
           )}
         </View>
       </ScrollView>
+
+      {/* Chat Modal */}
+      <ChatModal
+        visible={showChatModal}
+        onClose={() => setShowChatModal(false)}
+        package={selectedPackage}
+        agentName={agent?.name || 'Agent'}
+      />
     </SafeAreaView>
   );
 }
