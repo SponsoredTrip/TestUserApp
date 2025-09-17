@@ -309,12 +309,39 @@ export default function Home() {
         />
       </Card>
 
-      {/* Sticky Filter Ribbon */}
+      {/* Sticky Filter Ribbon - Outside ScrollView */}
       <View style={styles.stickyFilterContainer}>
-        {ribbons.filter(ribbon => ribbon.type === 'filter').map(ribbon => renderFilterRibbon(ribbon))}
+        {ribbons.filter(ribbon => ribbon.type === 'filter').map(ribbon => (
+          <View key={ribbon.id} style={styles.stickyFilterContent}>
+            <Text style={styles.stickyFilterTitle}>{ribbon.title}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+              <TouchableOpacity
+                style={[styles.filterChip, selectedFilter === 'all' && styles.filterChipActive]}
+                onPress={() => setSelectedFilter('all')}
+              >
+                <Text style={[styles.filterChipText, selectedFilter === 'all' && styles.filterChipTextActive]}>
+                  All
+                </Text>
+              </TouchableOpacity>
+              {ribbon.items.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[styles.filterChip, selectedFilter === item.value && styles.filterChipActive]}
+                  onPress={() => setSelectedFilter(item.value)}
+                >
+                  <Text style={styles.filterIcon}>{item.icon}</Text>
+                  <Text style={[styles.filterChipText, selectedFilter === item.value && styles.filterChipTextActive]}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        ))}
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollableContent} showsVerticalScrollIndicator={false}>
         {/* Other Dynamic Ribbons */}
         {ribbons.filter(ribbon => ribbon.type !== 'filter').map(ribbon => {
           switch (ribbon.type) {
