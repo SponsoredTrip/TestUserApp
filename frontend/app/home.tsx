@@ -123,19 +123,36 @@ export default function Home() {
     router.replace('/');
   };
 
-  const filterAgents = () => {
+  const filterAgents = async () => {
     let filtered = agents;
     
     if (selectedFilter !== 'all') {
-      // Handle agent type filters
-      if (selectedFilter === 'travel' || selectedFilter === 'transport') {
-        filtered = agents.filter(agent => agent.type === selectedFilter);
+      // Handle sponsored filter - fetch agents with sponsored packages from backend
+      if (selectedFilter === 'sponsored') {
+        try {
+          const token = await AsyncStorage.getItem('auth_token');
+          const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/agents?agent_type=sponsored`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
+          if (response.ok) {
+            const sponsoredAgents = await response.json();
+            filtered = sponsoredAgents;
+          } else {
+            // Fallback to subscribed agents if API fails
+            filtered = agents.filter(agent => agent.is_subscribed === true);
+          }
+        } catch (error) {
+          console.error('Error fetching sponsored agents:', error);
+          // Fallback to subscribed agents if API fails
+          filtered = agents.filter(agent => agent.is_subscribed === true);
+        }
       }
-      // Handle sponsored filter - show agents who have sponsored packages
-      else if (selectedFilter === 'sponsored') {
-        // For now, show subscribed agents as they are likely to have sponsored packages
-        // In a real implementation, we'd check which agents have packages with is_sponsored=true
-        filtered = agents.filter(agent => agent.is_subscribed === true);
+      // Handle agent type filters
+      else if (selectedFilter === 'travel' || selectedFilter === 'transport') {
+        filtered = agents.filter(agent => agent.type === selectedFilter);
       }
       // Handle location-based filters
       else if (['goa', 'himachal', 'uttarakhand'].includes(selectedFilter)) {
