@@ -729,6 +729,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: spacing.md,
   },
+  agentAvatar: {
+    marginRight: spacing.md,
+  },
   agentImagePlaceholder: {
     width: 80,
     height: 80,
