@@ -659,12 +659,31 @@ async def populate_sample_data():
             destination = destinations[i % len(destinations)]
             title = f"{package_titles[j % len(package_titles)]} {destination}"
             
+            # Calculate pricing with sponsorship (every 3rd package is sponsored)
+            base_price = 5000 + (i * 1000) + (j * 500)
+            is_sponsored = (i + j) % 3 == 0  # Every 3rd package is sponsored
+            
+            if is_sponsored:
+                discount_percent = 20 + ((i + j) % 3) * 15  # 20%, 35%, or 50% discount
+                original_price = base_price
+                sponsored_price = int(base_price * (100 - discount_percent) / 100)
+                current_price = sponsored_price
+            else:
+                original_price = None
+                sponsored_price = None
+                discount_percent = None
+                current_price = base_price
+            
             packages.append({
                 "id": package_id,
                 "agent_id": agent_id,
                 "title": title,
                 "description": f"Amazing {title.lower()} experience with professional guides",
-                "price": 5000 + (i * 1000) + (j * 500),
+                "price": current_price,
+                "original_price": original_price,
+                "discount_percentage": discount_percent,
+                "sponsored_price": sponsored_price,
+                "is_sponsored": is_sponsored,
                 "duration": f"{2 + j} days {1 + j} nights",
                 "duration_days": 2 + j,
                 "destination": destination,
