@@ -75,6 +75,8 @@ class Agent(BaseModel):
     contact_email: str
     image_base64: str
     services_offered: List[str] = []
+    is_subscribed: bool = False  # New field for subscription status
+    subscription_type: str = "normal"  # "normal" or "premium"
     is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
