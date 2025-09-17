@@ -176,7 +176,11 @@ async def login(user_data: UserLogin):
 
 @api_router.get("/auth/me")
 async def get_me(current_user: dict = Depends(get_current_user)):
-    del current_user["password_hash"]
+    # Remove MongoDB ObjectId and password_hash for JSON serialization
+    if "_id" in current_user:
+        del current_user["_id"]
+    if "password_hash" in current_user:
+        del current_user["password_hash"]
     return current_user
 
 # Agent Routes
