@@ -10,10 +10,14 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { colors, layout, spacing, typography, shadows, radius, brand } from '../constants/theme';
+import { Card } from '../components/UI/Card';
+import { Button } from '../components/UI/Button';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -120,11 +124,121 @@ export default function Index() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Image source={require('../assets/logo.png')} style={styles.loadingLogo} />
+          <Text style={styles.loadingText}>Loading {brand.name}...</Text>
         </View>
       </SafeAreaView>
     );
   }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" backgroundColor={colors.background} />
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            <Image source={require('../assets/logo.png')} style={styles.logo} />
+            <Text style={styles.appTitle}>{brand.name}</Text>
+            <Text style={styles.subtitle}>{brand.tagline}</Text>
+          </View>
+
+          {/* Auth Form */}
+          <Card style={styles.formCard}>
+            <Text style={styles.formTitle}>
+              {isLogin ? 'Welcome Back!' : 'Create Account'}
+            </Text>
+            
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor={colors.textSecondary}
+                value={formData.username}
+                onChangeText={(text) => setFormData({...formData, username: text})}
+                autoCapitalize="none"
+              />
+            </View>
+
+            {!isLogin && (
+              <>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Full Name"
+                    placeholderTextColor={colors.textSecondary}
+                    value={formData.full_name}
+                    onChangeText={(text) => setFormData({...formData, full_name: text})}
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    placeholderTextColor={colors.textSecondary}
+                    value={formData.email}
+                    onChangeText={(text) => setFormData({...formData, email: text})}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+              </>
+            )}
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor={colors.textSecondary}
+                value={formData.password}
+                onChangeText={(text) => setFormData({...formData, password: text})}
+                secureTextEntry
+              />
+            </View>
+
+            <Button
+              title={loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
+              onPress={handleAuth}
+              disabled={loading}
+              style={styles.authButton}
+            />
+
+            <TouchableOpacity onPress={toggleAuthMode} style={styles.toggleButton}>
+              <Text style={styles.toggleText}>
+                {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+              </Text>
+            </TouchableOpacity>
+          </Card>
+
+          {/* Features Preview */}
+          <Card style={styles.featuresCard}>
+            <Text style={styles.featuresTitle}>What you'll get:</Text>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🏔️</Text>
+              <Text style={styles.featureText}>Best Travel Agents</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🚗</Text>
+              <Text style={styles.featureText}>Reliable Transport</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>💰</Text>
+              <Text style={styles.featureText}>Sponsored Prices</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🎯</Text>
+              <Text style={styles.featureText}>Budget Travel Planner</Text>
+            </View>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
