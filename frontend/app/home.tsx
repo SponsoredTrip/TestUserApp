@@ -31,6 +31,8 @@ interface Agent {
   total_bookings: number;
   location: string;
   image_base64: string;
+  is_subscribed?: boolean;
+  subscription_type?: string;
 }
 
 interface RibbonContent {
