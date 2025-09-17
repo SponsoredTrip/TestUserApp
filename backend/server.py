@@ -342,13 +342,17 @@ async def register(user_data: UserCreate):
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or email already exists")
     
-    # Create user
+    # Create user with random avatar
+    import random
+    avatar_options = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+    
     hashed_password = hash_password(user_data.password)
     user = User(
         username=user_data.username,
         email=user_data.email,
         password_hash=hashed_password,
-        full_name=user_data.full_name
+        full_name=user_data.full_name,
+        avatar_id=random.choice(avatar_options)
     )
     
     await db.users.insert_one(user.dict())
