@@ -180,6 +180,18 @@ backend:
           agent: "testing"
           comment: "Sample data initialization working perfectly. Successfully populates database with 3 agents (2 travel, 1 transport), 6 packages, and 3 ribbons. All data properly structured and accessible via APIs."
 
+  - task: "Budget Travel Algorithm & API"
+    implemented: true
+    working: "NA"
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented comprehensive Budget Travel system with package combination algorithm, location-based pricing, transport cost calculations, and enhanced sample data with coordinates for Goa, Shimla-Manali, Rajasthan packages. Added Budget Travel option to Explore More ribbon."
+
 frontend:
   - task: "Authentication UI"
     implemented: true
