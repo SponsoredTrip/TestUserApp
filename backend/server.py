@@ -595,7 +595,7 @@ async def initialize_sample_data():
         # Adventure Tours India packages
         {
             "id": str(uuid.uuid4()),
-            "agent_id": travel_agent_1_id,
+            "agent_id": travel_agent_ids[0] if travel_agent_ids else str(uuid.uuid4()),
             "title": "Shimla Manali Adventure Trek",
             "description": "5-day adventure trekking tour covering beautiful mountain trails with camping and local cuisine",
             "price": 15000,
