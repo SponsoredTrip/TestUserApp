@@ -1,0 +1,40 @@
+{
+  "source": {
+    "place_name": "goa , india",
+    "lat": 15.2993265,
+    "lon": 74.1240501
+  },
+  "radii_km": [100],
+  "sample_destinations": [
+    {
+      "name": "Kuskem Waterfall",
+      "lat": 15.299214,
+      "lon": 74.124047,
+      "distance_km": 4.141
+    },
+    {
+      "name": "Monte Hill Viewpoint", 
+      "lat": 15.279806,
+      "lon": 73.962531,
+      "distance_km": 13.405
+    },
+    {
+      "name": "Panaji",
+      "lat": 15.4989,
+      "lon": 73.8278,
+      "distance_km": 18.5
+    },
+    {
+      "name": "Margao",
+      "lat": 15.2708,
+      "lon": 73.9528,
+      "distance_km": 22.3
+    },
+    {
+      "name": "Vasco da Gama",
+      "lat": 15.3958,
+      "lon": 73.8147,
+      "distance_km": 15.8
+    }
+  ]
+}
