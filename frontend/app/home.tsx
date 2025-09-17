@@ -46,6 +46,7 @@ interface RibbonContent {
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [ribbons, setRibbons] = useState<RibbonContent[]>([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [loading, setLoading] = useState(true);
