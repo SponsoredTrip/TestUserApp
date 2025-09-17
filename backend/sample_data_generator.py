@@ -137,6 +137,7 @@ def generate_comprehensive_sample_data():
             "contact_phone": f"+91-9{i:03d}{(i*7)%1000:03d}{(i*11)%100:02d}",
             "contact_email": f"{travel_agent_names[i].lower().replace(' ', '').replace('&', 'and')}@travel.com",
             "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "avatar_id": AVATAR_IDS[i % len(AVATAR_IDS)],
             "services_offered": travel_services[i % len(travel_services)],
             "is_subscribed": is_subscribed,
             "subscription_type": subscription_type,
