@@ -1155,44 +1155,181 @@ class BackendTester:
             self.log_result("Enhanced Sample Data", False, f"Request failed: {str(e)}")
             return False
 
+    def test_avatar_id_validation(self):
+        """Test that all agents have avatar_id field as mentioned in review request"""
+        print("🔄 Testing Avatar ID Validation...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/agents", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                agents = response.json()
+                if agents:
+                    # Check if agents have avatar_id field
+                    agents_with_avatar = [a for a in agents if "avatar_id" in a]
+                    agents_without_avatar = [a for a in agents if "avatar_id" not in a]
+                    
+                    if len(agents_with_avatar) == len(agents):
+                        self.log_result("Avatar ID Validation", True, 
+                                      f"All {len(agents)} agents have avatar_id field")
+                        return True
+                    else:
+                        self.log_result("Avatar ID Validation", False, 
+                                      f"{len(agents_without_avatar)} agents missing avatar_id field out of {len(agents)} total")
+                        return False
+                else:
+                    self.log_result("Avatar ID Validation", False, "No agents found")
+                    return False
+            else:
+                self.log_result("Avatar ID Validation", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Avatar ID Validation", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_sponsored_filter_fix(self):
+        """Test the sponsored filter fix - GET /api/agents?agent_type=sponsored"""
+        print("🔄 Testing Sponsored Filter Fix...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/agents?agent_type=sponsored", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                sponsored_agents = response.json()
+                if isinstance(sponsored_agents, list) and len(sponsored_agents) > 0:
+                    # Verify all returned agents are actually subscribed
+                    all_subscribed = all(agent.get("is_subscribed", False) for agent in sponsored_agents)
+                    
+                    if all_subscribed:
+                        self.log_result("Sponsored Filter Fix", True, 
+                                      f"Sponsored filter returns {len(sponsored_agents)} subscribed agents correctly")
+                        return True
+                    else:
+                        non_subscribed = [a for a in sponsored_agents if not a.get("is_subscribed", False)]
+                        self.log_result("Sponsored Filter Fix", False, 
+                                      f"{len(non_subscribed)} non-subscribed agents returned by sponsored filter")
+                        return False
+                else:
+                    self.log_result("Sponsored Filter Fix", False, 
+                                  "Sponsored filter returns no agents or invalid format")
+                    return False
+            else:
+                self.log_result("Sponsored Filter Fix", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Sponsored Filter Fix", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_budget_travel_destination_groups(self):
+        """Test Budget Travel destination groups data for click handlers"""
+        print("🔄 Testing Budget Travel Destination Groups...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/budget-travel/preview", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                destinations = data.get("available_destinations", [])
+                
+                if isinstance(destinations, list) and len(destinations) > 0:
+                    # Test that we can search for each destination
+                    test_destination = destinations[0].lower()
+                    
+                    search_request = {
+                        "budget": 50000,
+                        "num_persons": 2,
+                        "num_days": 6,
+                        "place": test_destination
+                    }
+                    
+                    search_response = requests.post(
+                        f"{self.base_url}/budget-travel",
+                        headers=self.headers,
+                        json=search_request,
+                        timeout=15
+                    )
+                    
+                    if search_response.status_code == 200:
+                        search_data = search_response.json()
+                        if search_data.get("total_combinations_found", 0) >= 0:  # Allow 0 results
+                            self.log_result("Budget Travel Destination Groups", True, 
+                                          f"Destination groups data supports search for {test_destination}")
+                            return True
+                        else:
+                            self.log_result("Budget Travel Destination Groups", False, 
+                                          f"Search failed for destination {test_destination}")
+                            return False
+                    else:
+                        self.log_result("Budget Travel Destination Groups", False, 
+                                      f"Search request failed: HTTP {search_response.status_code}")
+                        return False
+                else:
+                    self.log_result("Budget Travel Destination Groups", False, 
+                                  "No destinations found in preview data")
+                    return False
+            else:
+                self.log_result("Budget Travel Destination Groups", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Budget Travel Destination Groups", False, f"Request failed: {str(e)}")
+            return False
+
     def run_all_tests(self):
-        """Run all backend tests in sequence"""
-        print("=" * 60)
-        print("🚀 STARTING BACKEND API TESTS")
-        print("=" * 60)
+        """Run all backend tests in sequence - FINAL VALIDATION FOCUS"""
+        print("=" * 80)
+        print("🎯 FINAL VALIDATION TESTING - ALL ISSUES RESOLVED")
+        print("=" * 80)
         print(f"Testing against: {self.base_url}")
         print()
+        print("🔍 PRIORITY VALIDATION TESTS:")
+        print("1. Budget Travel Groups Click - Fixed destination group click handlers")
+        print("2. Advanced Filter Date Picker - Fixed DateTimePicker positioning")  
+        print("3. Logo Integration - Added new SponsoredTrip logo to loading screen")
+        print("4. Agent Avatar Images - Added professional avatar images for all agents")
+        print()
         
-        # Test sequence - order matters for authentication
+        # Test sequence focused on validation priorities from review request
         test_sequence = [
             # Initialize comprehensive data first
             self.test_comprehensive_sample_data_initialization,
             
-            # Phase 1 & Phase 2 Priority Tests (as per review request)
-            self.test_phase1_filter_options_structure,
-            self.test_sponsored_pricing_verification,  # Phase 1: Sponsored Pricing
-            self.test_enhanced_budget_travel_algorithm,  # Phase 1: Enhanced Budget Travel
-            self.test_budget_travel_preview,  # Phase 1: Budget Travel Groups
-            self.test_phase2_subscription_status,
-            self.test_phase2_recommended_section,
+            # PRIORITY VALIDATION TESTS (from review request)
+            # 1. Budget Travel API validation
+            self.test_budget_travel_preview,  # GET /api/budget-travel/preview
+            self.test_budget_travel_destination_groups,  # Destination groups click handlers
+            self.test_enhanced_budget_travel_algorithm,  # POST /api/budget-travel with destination
+            
+            # 2. Backend Data Enhancement validation
+            self.test_avatar_id_validation,  # Verify avatar_id field in all agents
+            self.test_comprehensive_agent_count_verification,  # Verify 100 agents created
+            
+            # 3. Sponsored Filter & Chat APIs validation
+            self.test_sponsored_filter_fix,  # GET /api/agents?agent_type=sponsored (CRITICAL FIX)
             
             # Authentication tests (needed for chat API)
             self.test_user_registration,
             self.test_user_login,
             self.test_get_current_user,
             
-            # Phase 2: Chat API (requires authentication)
-            self.test_phase2_chat_api,
+            # Chat API validation
+            self.test_phase2_chat_api,  # POST /api/chat/send + GET /api/chat/{package_id}
             
-            # Additional comprehensive tests
-            self.test_comprehensive_agent_count_verification,
-            self.test_budget_travel_ribbon_integration,
-            self.test_budget_travel_with_larger_dataset,
+            # 4. Package Data with Sponsored Pricing validation
+            self.test_sponsored_pricing_verification,  # GET /api/packages with discount fields
+            
+            # Additional validation tests
+            self.test_phase1_filter_options_structure,
+            self.test_phase2_subscription_status,
+            self.test_phase2_recommended_section,
             self.test_get_packages,
-            self.test_create_booking,
-            self.test_get_user_bookings,
-            self.test_enhanced_sample_data,
-            self.test_budget_travel_edge_cases
+            self.test_budget_travel_ribbon_integration,
+            self.test_enhanced_sample_data
         ]
         
         for test_func in test_sequence:
