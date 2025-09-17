@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  TextInput,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors, layout, spacing, typography, shadows, radius } from '../../constants/theme';
 import { Card } from './Card';
 import { Button } from './Button';
