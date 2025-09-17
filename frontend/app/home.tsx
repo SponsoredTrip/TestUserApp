@@ -464,7 +464,7 @@ export default function Home() {
              selectedFilter === 'travel' ? 'Travel Agents' : 'Transport Agents'}
           </Text>
           <FlatList
-            data={filterAgents()}
+            data={filteredAgents}
             renderItem={renderAgentCard}
             keyExtractor={(item) => item.id}
             scrollEnabled={false}
