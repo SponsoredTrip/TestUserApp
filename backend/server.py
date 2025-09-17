@@ -503,6 +503,24 @@ async def get_budget_travel_preview():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting budget preview: {str(e)}")
 
+async def populate_sample_data():
+    """Populate the database with comprehensive sample data"""
+    
+    # Clear existing data
+    await db.agents.delete_many({})
+    await db.packages.delete_many({})
+    await db.ribbons.delete_many({})
+    
+    # Generate comprehensive sample agents (100 total)
+    agents, agent_ids = generate_comprehensive_sample_data()
+    
+    # Insert agents
+    await db.agents.insert_many(agents)
+    
+    # Select some agent IDs for packages
+    travel_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'travel'][:10]
+    transport_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'transport'][:5]
+
 # Initialize sample data
 @api_router.post("/init-data")
 async def initialize_sample_data():
