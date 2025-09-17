@@ -84,9 +84,12 @@ class Package(BaseModel):
     description: str
     price: float
     duration: str
+    duration_days: int = 0  # Parsed from duration string
     destination: str
     image_base64: str
     features: List[str]
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
