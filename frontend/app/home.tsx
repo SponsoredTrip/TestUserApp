@@ -64,6 +64,62 @@ export default function Home() {
     loadInitialData();
   }, []);
 
+  useEffect(() => {
+    if (agents.length > 0) {
+      applyFilters();
+    }
+  }, [selectedFilter, searchQuery, agents]);
+
+  const applyFilters = async () => {
+    let filtered = agents;
+    
+    if (selectedFilter !== 'all') {
+      // Handle sponsored filter - fetch agents with sponsored packages from backend
+      if (selectedFilter === 'sponsored') {
+        try {
+          const token = await AsyncStorage.getItem('auth_token');
+          const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/agents?agent_type=sponsored`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
+          if (response.ok) {
+            const sponsoredAgents = await response.json();
+            filtered = sponsoredAgents;
+          } else {
+            // Fallback to subscribed agents if API fails
+            filtered = agents.filter(agent => agent.is_subscribed === true);
+          }
+        } catch (error) {
+          console.error('Error fetching sponsored agents:', error);
+          // Fallback to subscribed agents if API fails
+          filtered = agents.filter(agent => agent.is_subscribed === true);
+        }
+      }
+      // Handle agent type filters
+      else if (selectedFilter === 'travel' || selectedFilter === 'transport') {
+        filtered = agents.filter(agent => agent.type === selectedFilter);
+      }
+      // Handle location-based filters
+      else if (['goa', 'himachal', 'uttarakhand'].includes(selectedFilter)) {
+        filtered = agents.filter(agent => 
+          agent.location.toLowerCase().includes(selectedFilter) ||
+          agent.location.toLowerCase().includes(selectedFilter === 'himachal' ? 'shimla' : selectedFilter === 'uttarakhand' ? 'dehradun' : 'goa')
+        );
+      }
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(agent => 
+        agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agent.location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    setFilteredAgents(filtered);
+  };
+
   const loadInitialData = async () => {
     try {
       const token = await AsyncStorage.getItem('auth_token');
