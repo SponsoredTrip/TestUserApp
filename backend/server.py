@@ -248,10 +248,19 @@ async def get_user_bookings(current_user: dict = Depends(get_current_user)):
 # Initialize sample data
 @api_router.post("/init-data")
 async def initialize_sample_data():
+    # Clear existing data
+    await db.agents.delete_many({})
+    await db.packages.delete_many({})
+    await db.ribbons.delete_many({})
+    
     # Sample Travel Agents
+    travel_agent_1_id = str(uuid.uuid4())
+    travel_agent_2_id = str(uuid.uuid4())
+    transport_agent_1_id = str(uuid.uuid4())
+    
     travel_agents = [
         {
-            "id": str(uuid.uuid4()),
+            "id": travel_agent_1_id,
             "name": "Adventure Tours India",
             "type": "travel",
             "description": "Specializing in adventure and trekking tours across India",
@@ -265,7 +274,7 @@ async def initialize_sample_data():
             "created_at": datetime.utcnow()
         },
         {
-            "id": str(uuid.uuid4()),
+            "id": travel_agent_2_id,
             "name": "Royal Rajasthan Tours",
             "type": "travel",
             "description": "Heritage and cultural tours of Rajasthan",
@@ -283,7 +292,7 @@ async def initialize_sample_data():
     # Sample Transport Agents
     transport_agents = [
         {
-            "id": str(uuid.uuid4()),
+            "id": transport_agent_1_id,
             "name": "Swift Cabs",
             "type": "transport",
             "description": "Reliable taxi and cab services across major cities",
@@ -292,7 +301,7 @@ async def initialize_sample_data():
             "location": "Delhi, Mumbai, Bangalore",
             "contact_phone": "+91-8765432109",
             "contact_email": "booking@swiftcabs.com",
-            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
             "is_active": True,
             "created_at": datetime.utcnow()
         }
@@ -300,6 +309,93 @@ async def initialize_sample_data():
     
     # Insert agents
     await db.agents.insert_many(travel_agents + transport_agents)
+    
+    # Sample Packages
+    packages = [
+        # Adventure Tours India packages
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_1_id,
+            "title": "Shimla Manali Adventure Trek",
+            "description": "5-day adventure trekking tour covering beautiful mountain trails with camping and local cuisine",
+            "price": 15000,
+            "duration": "5 days 4 nights",
+            "destination": "Shimla - Manali",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Professional guide", "Camping equipment", "All meals", "Transportation", "First aid kit"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_1_id,
+            "title": "Himalayan Base Camp Trek",
+            "description": "Ultimate 12-day trekking experience to Himalayan base camps with expert guides",
+            "price": 35000,
+            "duration": "12 days 11 nights",
+            "destination": "Himachal Pradesh",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Expert mountaineer guide", "High altitude gear", "All meals", "Permits", "Medical support", "Photography service"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        # Royal Rajasthan Tours packages
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_2_id,
+            "title": "Golden Triangle Heritage Tour",
+            "description": "Classic 7-day tour covering Delhi, Agra, and Jaipur with heritage hotels and cultural experiences",
+            "price": 25000,
+            "duration": "7 days 6 nights",
+            "destination": "Delhi - Agra - Jaipur",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QSFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Heritage hotel stay", "Professional guide", "All meals", "AC transportation", "Monument tickets", "Cultural shows"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": travel_agent_2_id,
+            "title": "Rajasthan Royal Palace Tour",
+            "description": "Luxury 10-day tour exploring magnificent palaces and forts of Rajasthan",
+            "price": 45000,
+            "duration": "10 days 9 nights",
+            "destination": "Jaipur - Udaipur - Jodhpur - Jaisalmer",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["5-star palace hotels", "Private guide", "Luxury transportation", "Royal dining", "Desert safari", "Folk performances"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        # Swift Cabs packages
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": transport_agent_1_id,
+            "title": "Airport Transfer Service",
+            "description": "Reliable airport pickup and drop service with professional drivers",
+            "price": 800,
+            "duration": "1 way trip",
+            "destination": "Any Airport",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["AC car", "Professional driver", "24/7 availability", "GPS tracking", "Toll included"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "agent_id": transport_agent_1_id,
+            "title": "Inter-city Travel Package",
+            "description": "Comfortable inter-city travel with multiple stops and flexible timing",
+            "price": 2500,
+            "duration": "Per day",
+            "destination": "Multiple cities",
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+            "features": ["Luxury vehicle", "Experienced driver", "Fuel included", "Multiple stops", "Flexible schedule", "Refreshments"],
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        }
+    ]
+    
+    await db.packages.insert_many(packages)
     
     # Sample ribbons
     ribbons = [
