@@ -628,7 +628,7 @@ async def initialize_sample_data():
         # Add Goa packages for budget travel example
         {
             "id": str(uuid.uuid4()),
-            "agent_id": travel_agent_1_id,
+            "agent_id": travel_agent_ids[0] if travel_agent_ids else str(uuid.uuid4()),
             "title": "Goa Beach Adventure",
             "description": "3-day beach adventure with water sports and local sightseeing",
             "price": 10000,
