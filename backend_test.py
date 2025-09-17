@@ -1170,6 +1170,8 @@ class BackendTester:
             
             # Phase 1 & Phase 2 Priority Tests (as per review request)
             self.test_phase1_filter_options_structure,
+            self.test_sponsored_pricing_verification,  # Phase 1: Sponsored Pricing
+            self.test_enhanced_budget_travel_algorithm,  # Phase 1: Enhanced Budget Travel
             self.test_budget_travel_preview,  # Phase 1: Budget Travel Groups
             self.test_phase2_subscription_status,
             self.test_phase2_recommended_section,
