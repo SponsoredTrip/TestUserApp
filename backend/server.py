@@ -577,6 +577,20 @@ async def populate_sample_data():
     # Insert agents
     await db.agents.insert_many(agents)
     
+    # Get subscribed agents for recommended section
+    subscribed_agents = [agent for agent in agents if agent['is_subscribed']][:6]  # Top 6 subscribed agents
+    
+    # Update recommended ribbon with subscribed agents
+    recommended_items = []
+    for agent in subscribed_agents:
+        recommended_items.append({
+            "agent_id": agent['id'],
+            "name": agent['name'],
+            "type": agent['type'],
+            "rating": agent['rating'],
+            "location": agent['location']
+        })
+    
     # Select some agent IDs for packages
     travel_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'travel'][:10]
     transport_agent_ids = [agent['id'] for agent in agents if agent['type'] == 'transport'][:5]
