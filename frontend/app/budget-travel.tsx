@@ -438,6 +438,39 @@ const styles = StyleSheet.create({
     ...typography.body2,
     marginBottom: spacing.xs,
   },
+  destinationGroup: {
+    backgroundColor: colors.surfaceLight,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    ...shadows.small,
+  },
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  groupIcon: {
+    fontSize: 32,
+    marginRight: spacing.md,
+  },
+  groupInfo: {
+    flex: 1,
+  },
+  groupName: {
+    ...typography.body1,
+    fontWeight: 'bold',
+    marginBottom: spacing.xs / 2,
+  },
+  groupDescription: {
+    ...typography.body2,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs / 2,
+  },
+  groupPackages: {
+    ...typography.caption,
+    color: colors.primary,
+    fontWeight: '600',
+  },
   loadingCard: {
     alignItems: 'center',
     paddingVertical: spacing.xl,
