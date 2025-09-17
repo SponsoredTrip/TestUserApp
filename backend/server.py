@@ -736,10 +736,10 @@ async def initialize_sample_data():
             "title": "Explore More",
             "type": "explore",
             "items": [
+                {"category": "Budget Travel", "count": 50, "image": "💰", "action": "budget_travel"},
                 {"category": "Weekend Getaways", "count": 25, "image": "🏖️"},
                 {"category": "Adventure Sports", "count": 15, "image": "🏔️"},
-                {"category": "Cultural Tours", "count": 30, "image": "🏛️"},
-                {"category": "Budget Travel", "count": 50, "image": "💰", "action": "budget_travel"}
+                {"category": "Cultural Tours", "count": 30, "image": "🏛️"}
             ],
             "order": 3,
             "is_active": True
