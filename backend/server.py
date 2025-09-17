@@ -596,16 +596,19 @@ async def populate_sample_data():
     # Insert packages
     await db.packages.insert_many(packages)
     
-    # Create ribbons
+    # Create ribbons with proper filter options
     ribbons = [
         {
             "id": str(uuid.uuid4()),
             "title": "Filter Options",
             "type": "filter",
             "items": [
-                {"category": "Travel Type", "options": ["Adventure", "Cultural", "Beach", "Mountain"]},
-                {"category": "Budget", "options": ["Budget", "Mid-range", "Luxury"]},
-                {"category": "Duration", "options": ["1-3 days", "4-7 days", "1-2 weeks"]}
+                {"name": "Travel", "value": "travel", "icon": "🏔️"},
+                {"name": "Transport", "value": "transport", "icon": "🚗"},
+                {"name": "Sponsored", "value": "sponsored", "icon": "💰"},
+                {"name": "Goa", "value": "goa", "icon": "🏖️"},
+                {"name": "Himachal", "value": "himachal", "icon": "⛰️"},
+                {"name": "Uttarakhand", "value": "uttarakhand", "icon": "🏔️"}
             ],
             "order": 1,
             "is_active": True
