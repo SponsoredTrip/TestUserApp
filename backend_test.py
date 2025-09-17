@@ -909,6 +909,170 @@ class BackendTester:
             self.log_result("Phase 2: Chat API", False, f"Request failed: {str(e)}")
             return False
 
+    def test_sponsored_pricing_verification(self):
+        """Test Phase 1: Sponsored Pricing - verify packages have sponsored pricing fields"""
+        print("🔄 Testing Phase 1: Sponsored Pricing Verification...")
+        
+        try:
+            response = requests.get(f"{self.base_url}/packages", headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                packages = response.json()
+                if packages:
+                    # Find sponsored packages
+                    sponsored_packages = [pkg for pkg in packages if pkg.get("is_sponsored", False)]
+                    
+                    if sponsored_packages:
+                        sponsored_count = len(sponsored_packages)
+                        
+                        # Verify sponsored packages have required fields
+                        required_sponsored_fields = ["original_price", "discount_percentage", "sponsored_price", "is_sponsored"]
+                        valid_sponsored = 0
+                        pricing_errors = []
+                        
+                        for pkg in sponsored_packages:
+                            if all(field in pkg for field in required_sponsored_fields):
+                                # Verify pricing logic: original_price > price (discount applied)
+                                if (pkg["original_price"] and pkg["original_price"] > pkg["price"] and
+                                    pkg["sponsored_price"] == pkg["price"]):
+                                    
+                                    # Verify discount percentage calculation
+                                    expected_discount = ((pkg["original_price"] - pkg["price"]) / pkg["original_price"]) * 100
+                                    actual_discount = pkg["discount_percentage"]
+                                    
+                                    if abs(expected_discount - actual_discount) < 1:  # Allow 1% variance
+                                        valid_sponsored += 1
+                                    else:
+                                        pricing_errors.append(f"Package {pkg['title']}: discount calculation error")
+                                else:
+                                    pricing_errors.append(f"Package {pkg['title']}: pricing logic error")
+                            else:
+                                pricing_errors.append(f"Package {pkg['title']}: missing sponsored fields")
+                        
+                        if valid_sponsored == sponsored_count and not pricing_errors:
+                            self.log_result("Phase 1: Sponsored Pricing Verification", True, 
+                                          f"All {sponsored_count} sponsored packages have correct pricing structure")
+                            return True
+                        else:
+                            error_msg = f"Sponsored pricing issues: {valid_sponsored}/{sponsored_count} valid"
+                            if pricing_errors:
+                                error_msg += f". Errors: {pricing_errors[:3]}"  # Show first 3 errors
+                            self.log_result("Phase 1: Sponsored Pricing Verification", False, error_msg)
+                            return False
+                    else:
+                        self.log_result("Phase 1: Sponsored Pricing Verification", False, 
+                                      "No sponsored packages found")
+                        return False
+                else:
+                    self.log_result("Phase 1: Sponsored Pricing Verification", False, "No packages found")
+                    return False
+            else:
+                self.log_result("Phase 1: Sponsored Pricing Verification", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 1: Sponsored Pricing Verification", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_enhanced_budget_travel_algorithm(self):
+        """Test Phase 1: Enhanced Budget Travel with specific test data from review request"""
+        print("🔄 Testing Phase 1: Enhanced Budget Travel Algorithm...")
+        
+        # Test data from review request: budget=50000, num_persons=2, num_days=6, place="goa"
+        test_request = {
+            "budget": 50000,
+            "num_persons": 2,
+            "num_days": 6,
+            "place": "goa"
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/budget-travel",
+                headers=self.headers,
+                json=test_request,
+                timeout=15
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get("total_combinations_found", 0) > 0:
+                    combinations = data["combinations"]
+                    
+                    # Verify we find Goa packages with better combination algorithm
+                    goa_combinations = []
+                    for combo in combinations:
+                        has_goa = any("goa" in pkg.get("destination", "").lower() 
+                                    for pkg in combo.get("packages", []))
+                        if has_goa:
+                            goa_combinations.append(combo)
+                    
+                    if goa_combinations:
+                        # Check for realistic package combinations within budget
+                        valid_combinations = []
+                        for combo in goa_combinations:
+                            total_cost = combo.get("total_cost", 0)
+                            total_days = combo.get("total_days", 0)
+                            
+                            # Should be within budget and reasonable days
+                            if total_cost <= 50000 and total_days <= 6:
+                                # Check for proper pricing and savings calculations
+                                savings = combo.get("savings", 0)
+                                expected_savings = 50000 - total_cost
+                                
+                                if abs(savings - expected_savings) < 100:  # Allow small variance
+                                    valid_combinations.append(combo)
+                        
+                        if valid_combinations:
+                            # Look for the specific combination mentioned in review request
+                            # Beach Adventure (₹10,000/person, 3 days) + Heritage Tour (₹8,000/person, 2 days)
+                            target_combination = None
+                            for combo in valid_combinations:
+                                packages = combo.get("packages", [])
+                                if len(packages) >= 2:
+                                    beach_pkg = next((p for p in packages if "beach" in p.get("title", "").lower()), None)
+                                    heritage_pkg = next((p for p in packages if "heritage" in p.get("title", "").lower()), None)
+                                    
+                                    if beach_pkg and heritage_pkg:
+                                        # Check pricing matches expected values
+                                        if (beach_pkg.get("price_per_person") == 10000 and 
+                                            heritage_pkg.get("price_per_person") == 8000):
+                                            target_combination = combo
+                                            break
+                            
+                            if target_combination:
+                                total_cost = target_combination["total_cost"]
+                                total_days = target_combination["total_days"]
+                                self.log_result("Phase 1: Enhanced Budget Travel Algorithm", True, 
+                                              f"Found target Goa combination: Beach Adventure + Heritage Tour = ₹{total_cost} for {total_days} days")
+                                return True
+                            else:
+                                self.log_result("Phase 1: Enhanced Budget Travel Algorithm", True, 
+                                              f"Found {len(valid_combinations)} valid Goa combinations with enhanced algorithm")
+                                return True
+                        else:
+                            self.log_result("Phase 1: Enhanced Budget Travel Algorithm", False, 
+                                          "No valid combinations found within budget constraints")
+                            return False
+                    else:
+                        self.log_result("Phase 1: Enhanced Budget Travel Algorithm", False, 
+                                      "No Goa combinations found despite place filter")
+                        return False
+                else:
+                    self.log_result("Phase 1: Enhanced Budget Travel Algorithm", False, 
+                                  f"No combinations found for test data: {test_request}")
+                    return False
+            else:
+                self.log_result("Phase 1: Enhanced Budget Travel Algorithm", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Phase 1: Enhanced Budget Travel Algorithm", False, f"Request failed: {str(e)}")
+            return False
+
     def test_enhanced_sample_data(self):
         """Test that enhanced sample data includes new fields for budget travel"""
         print("🔄 Testing Enhanced Sample Data...")
