@@ -119,6 +119,10 @@ def generate_comprehensive_sample_data():
         agent_id = str(uuid.uuid4())
         agent_ids.append(agent_id)
         
+        # Make every 4th agent subscribed (premium)
+        is_subscribed = (i % 4 == 0)
+        subscription_type = "premium" if is_subscribed else "normal"
+        
         agents.append({
             "id": agent_id,
             "name": travel_agent_names[i],
@@ -131,6 +135,8 @@ def generate_comprehensive_sample_data():
             "contact_email": f"{travel_agent_names[i].lower().replace(' ', '').replace('&', 'and')}@travel.com",
             "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
             "services_offered": travel_services[i % len(travel_services)],
+            "is_subscribed": is_subscribed,
+            "subscription_type": subscription_type,
             "is_active": True,
             "created_at": datetime.utcnow()
         })
@@ -139,6 +145,10 @@ def generate_comprehensive_sample_data():
     for i in range(50):
         agent_id = str(uuid.uuid4())
         agent_ids.append(agent_id)
+        
+        # Make every 5th transport agent subscribed
+        is_subscribed = (i % 5 == 0)
+        subscription_type = "premium" if is_subscribed else "normal"
         
         agents.append({
             "id": agent_id,
@@ -152,6 +162,8 @@ def generate_comprehensive_sample_data():
             "contact_email": f"{transport_agent_names[i].lower().replace(' ', '').replace('&', 'and')}@transport.com",
             "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
             "services_offered": transport_services[i % len(transport_services)],
+            "is_subscribed": is_subscribed,
+            "subscription_type": subscription_type,
             "is_active": True,
             "created_at": datetime.utcnow()
         })
