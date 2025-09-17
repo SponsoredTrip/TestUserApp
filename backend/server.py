@@ -602,14 +602,18 @@ async def populate_sample_data():
     # Create comprehensive packages
     packages = []
     
-    # Goa packages (for budget travel testing)
+    # Goa packages (for budget travel testing) with sponsored pricing
     goa_packages = [
         {
             "id": str(uuid.uuid4()),
             "agent_id": travel_agent_ids[0],
             "title": "Beach Adventure Goa",
             "description": "Exciting beach activities and water sports in Goa",
+            "original_price": 14000,
             "price": 10000,
+            "discount_percentage": 28.6,
+            "sponsored_price": 10000,
+            "is_sponsored": True,
             "duration": "3 days 2 nights",
             "duration_days": 3,
             "destination": "Goa",
@@ -625,7 +629,11 @@ async def populate_sample_data():
             "agent_id": travel_agent_ids[1],
             "title": "Heritage Tour Goa",
             "description": "Explore the rich Portuguese heritage and culture of Goa",
+            "original_price": 12000,
             "price": 8000,
+            "discount_percentage": 33.3,
+            "sponsored_price": 8000,
+            "is_sponsored": True,
             "duration": "2 days 1 night",
             "duration_days": 2,
             "destination": "Goa",
