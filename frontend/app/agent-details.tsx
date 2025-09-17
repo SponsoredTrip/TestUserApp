@@ -239,9 +239,12 @@ export default function AgentDetails() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Agent Info */}
         <View style={styles.agentCard}>
-          <View style={styles.agentImagePlaceholder}>
-            <Text style={styles.agentImageText}>{agent.name[0]}</Text>
-          </View>
+          <Avatar 
+            avatar_id={agent.avatar_id}
+            name={agent.name}
+            size="large"
+            style={styles.agentAvatar}
+          />
           
           <View style={styles.agentInfo}>
             <Text style={styles.agentName}>{agent.name}</Text>
