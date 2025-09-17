@@ -611,7 +611,7 @@ async def initialize_sample_data():
         },
         {
             "id": str(uuid.uuid4()),
-            "agent_id": travel_agent_1_id,
+            "agent_id": travel_agent_ids[1] if len(travel_agent_ids) > 1 else str(uuid.uuid4()),
             "title": "Himalayan Base Camp Trek",
             "description": "Ultimate 12-day trekking experience to Himalayan base camps with expert guides",
             "price": 35000,
