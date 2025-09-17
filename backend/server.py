@@ -710,7 +710,7 @@ async def initialize_sample_data():
         },
         {
             "id": str(uuid.uuid4()),
-            "agent_id": transport_agent_1_id,
+            "agent_id": transport_agent_ids[0] if transport_agent_ids else str(uuid.uuid4()),
             "title": "Inter-city Travel Package",
             "description": "Comfortable inter-city travel with multiple stops and flexible timing",
             "price": 2500,
