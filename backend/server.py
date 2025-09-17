@@ -677,7 +677,7 @@ async def initialize_sample_data():
         },
         {
             "id": str(uuid.uuid4()),
-            "agent_id": travel_agent_2_id,
+            "agent_id": travel_agent_ids[1] if len(travel_agent_ids) > 1 else str(uuid.uuid4()),
             "title": "Rajasthan Royal Palace Tour",
             "description": "Luxury 10-day tour exploring magnificent palaces and forts of Rajasthan",
             "price": 45000,
