@@ -489,6 +489,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2196F3',
   },
+  priceContainer: {
+    alignItems: 'flex-end',
+  },
+  originalPrice: {
+    fontSize: 14,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginBottom: 2,
+  },
+  sponsoredPrice: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#E91E63',
+  },
+  discountBadge: {
+    fontSize: 10,
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginTop: 2,
+    fontWeight: 'bold',
+  },
   packageDescription: {
     fontSize: 14,
     color: '#666',
