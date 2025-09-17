@@ -402,9 +402,17 @@ export default function Home() {
             <Text style={styles.userName}>{user?.username || 'User'}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <Avatar 
+            avatar_id={user?.avatar_id}
+            name={user?.full_name || user?.username || 'User'}
+            size="small"
+            style={styles.userAvatar}
+          />
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search Bar */}
