@@ -412,7 +412,9 @@ export default function Home() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Image source={require('../assets/logo.png')} style={styles.loadingLogo} />
+          <ActivityIndicator size="large" color={colors.primary} style={styles.loadingSpinner} />
+          <Text style={styles.loadingText}>Loading {brand.name}...</Text>
         </View>
       </SafeAreaView>
     );
