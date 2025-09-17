@@ -1193,8 +1193,8 @@ class BackendTester:
         """Test user registration assigns random avatar_id (CRITICAL BUG FIX VALIDATION)"""
         print("🔄 Testing User Registration with Avatar Assignment...")
         
-        # Create unique test user for avatar testing
-        avatar_test_user = {
+        # Create unique test user for avatar testing and store for later login test
+        self.avatar_test_user = {
             "username": "avatar_test_" + str(uuid.uuid4())[:8],
             "email": f"avatar_test_{uuid.uuid4()}@example.com",
             "password": "SecurePass123!",
@@ -1205,7 +1205,7 @@ class BackendTester:
             response = requests.post(
                 f"{self.base_url}/auth/register",
                 headers=self.headers,
-                json=avatar_test_user,
+                json=self.avatar_test_user,
                 timeout=10
             )
             
@@ -1222,6 +1222,8 @@ class BackendTester:
                         expected_avatars = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
                         
                         if avatar_id in expected_avatars:
+                            # Store auth token for subsequent avatar tests
+                            self.avatar_auth_token = data["access_token"]
                             self.log_result("User Registration with Avatar", True, 
                                           f"New user assigned random avatar: {avatar_id}")
                             return True
@@ -1250,14 +1252,14 @@ class BackendTester:
         """Test user login returns avatar_id in user data (CRITICAL BUG FIX VALIDATION)"""
         print("🔄 Testing User Login Returns Avatar ID...")
         
-        # Use the existing test user that should have been registered
-        if not hasattr(self, 'test_user_data'):
-            self.log_result("User Login Returns Avatar", False, "No test user available for login test")
+        # Use the avatar test user that was just registered
+        if not hasattr(self, 'avatar_test_user'):
+            self.log_result("User Login Returns Avatar", False, "No avatar test user available for login test")
             return False
         
         login_data = {
-            "username": self.test_user_data["username"],
-            "password": self.test_user_data["password"]
+            "username": self.avatar_test_user["username"],
+            "password": self.avatar_test_user["password"]
         }
         
         try:
@@ -1279,6 +1281,8 @@ class BackendTester:
                         expected_avatars = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
                         
                         if avatar_id in expected_avatars:
+                            # Update auth token for current user test
+                            self.avatar_auth_token = data["access_token"]
                             self.log_result("User Login Returns Avatar", True, 
                                           f"Login response includes avatar_id: {avatar_id}")
                             return True
@@ -1307,14 +1311,18 @@ class BackendTester:
         """Test GET /api/auth/me includes avatar_id (CRITICAL BUG FIX VALIDATION)"""
         print("🔄 Testing Current User Includes Avatar ID...")
         
-        if not self.auth_token:
-            self.log_result("Current User Includes Avatar", False, "No auth token available")
+        if not hasattr(self, 'avatar_auth_token'):
+            self.log_result("Current User Includes Avatar", False, "No avatar auth token available")
             return False
+        
+        # Create headers with avatar auth token
+        avatar_headers = self.headers.copy()
+        avatar_headers["Authorization"] = f"Bearer {self.avatar_auth_token}"
         
         try:
             response = requests.get(
                 f"{self.base_url}/auth/me",
-                headers=self.headers,
+                headers=avatar_headers,
                 timeout=10
             )
             
