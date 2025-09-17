@@ -199,13 +199,14 @@ export const AdvancedFilterModal: React.FC<AdvancedFilterModalProps> = ({
           <DateTimePicker
             value={filters.dateFrom || new Date()}
             mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            display={Platform.OS === 'ios' ? 'default' : 'default'}
             onChange={(event, selectedDate) => {
               setShowFromDatePicker(false);
-              if (selectedDate) {
+              if (event.type === 'set' && selectedDate) {
                 setFilters({ ...filters, dateFrom: selectedDate });
               }
             }}
+            themeVariant="light"
           />
         )}
 
@@ -213,13 +214,14 @@ export const AdvancedFilterModal: React.FC<AdvancedFilterModalProps> = ({
           <DateTimePicker
             value={filters.dateTo || new Date()}
             mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            display={Platform.OS === 'ios' ? 'default' : 'default'}
             onChange={(event, selectedDate) => {
               setShowToDatePicker(false);
-              if (selectedDate) {
+              if (event.type === 'set' && selectedDate) {
                 setFilters({ ...filters, dateTo: selectedDate });
               }
             }}
+            themeVariant="light"
           />
         )}
       </View>
