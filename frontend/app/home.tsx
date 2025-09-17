@@ -406,32 +406,7 @@ export default function Home() {
     );
   };
 
-  const renderAgentCard = ({ item }: { item: Agent }) => (
-    <TouchableOpacity 
-      style={styles.agentCard}
-      onPress={() => router.push(`/agent-details?id=${item.id}`)}
-    >
-      <View style={styles.agentImagePlaceholder}>
-        <Text style={styles.agentImageText}>{item.name[0]}</Text>
-      </View>
-      <View style={styles.agentInfo}>
-        <Text style={styles.agentName}>{item.name}</Text>
-        <Text style={styles.agentDescription} numberOfLines={2}>{item.description}</Text>
-        <Text style={styles.agentLocation}>📍 {item.location}</Text>
-        <View style={styles.agentStats}>
-          <Text style={styles.agentRating}>⭐ {item.rating}</Text>
-          <Text style={styles.agentBookings}>{item.total_bookings} bookings</Text>
-          <View style={[styles.agentTypeBadge, 
-            item.type === 'travel' ? styles.travelBadge : styles.transportBadge
-          ]}>
-            <Text style={styles.agentTypeText}>
-              {item.type === 'travel' ? '🏔️ Travel' : '🚗 Transport'}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+
 
   if (loading) {
     return (
