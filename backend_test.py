@@ -729,19 +729,25 @@ class BackendTester:
         
         # Test sequence - order matters for authentication
         test_sequence = [
-            self.test_sample_data_initialization,
+            # Core comprehensive improvements tests
+            self.test_comprehensive_sample_data_initialization,
+            self.test_comprehensive_agent_count_verification,
+            self.test_budget_travel_ribbon_integration,
+            self.test_budget_travel_with_larger_dataset,
+            
+            # Authentication tests
             self.test_user_registration,
             self.test_user_login,
             self.test_get_current_user,
-            self.test_get_agents,
+            
+            # Additional API tests
             self.test_get_packages,
-            self.test_get_ribbons,
             self.test_create_booking,
             self.test_get_user_bookings,
+            
             # Budget Travel API Tests
             self.test_enhanced_sample_data,
             self.test_budget_travel_preview,
-            self.test_budget_travel_search_goa_example,
             self.test_budget_travel_edge_cases
         ]
         
