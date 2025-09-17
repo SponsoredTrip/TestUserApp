@@ -282,18 +282,49 @@ export default function BudgetTravel() {
           />
         </Card>
 
-        {/* Preview Info */}
+        {/* Preview Info with Destination Groups */}
         {preview && !searching && results.length === 0 && (
           <Card style={styles.previewCard}>
-            <Text style={styles.previewTitle}>Available Options</Text>
+            <Text style={styles.previewTitle}>Available Destination Groups</Text>
+            
+            {/* Goa Group */}
+            <TouchableOpacity style={styles.destinationGroup} onPress={() => handleDestinationGroupPress('Goa')}>
+              <View style={styles.groupHeader}>
+                <Text style={styles.groupIcon}>🏖️</Text>
+                <View style={styles.groupInfo}>
+                  <Text style={styles.groupName}>Goa Beach Paradise</Text>
+                  <Text style={styles.groupDescription}>3-5 days • ₹8,000-₹15,000 per person</Text>
+                  <Text style={styles.groupPackages}>Multiple packages available</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            {/* Himachal Group */}
+            <TouchableOpacity style={styles.destinationGroup} onPress={() => handleDestinationGroupPress('Himachal')}>
+              <View style={styles.groupHeader}>
+                <Text style={styles.groupIcon}>⛰️</Text>
+                <View style={styles.groupInfo}>
+                  <Text style={styles.groupName}>Himachal Adventures</Text>
+                  <Text style={styles.groupDescription}>5-12 days • ₹15,000-₹35,000 per person</Text>
+                  <Text style={styles.groupPackages}>Trekking & Hill Station packages</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+            
+            {/* Uttarakhand Group */}
+            <TouchableOpacity style={styles.destinationGroup} onPress={() => handleDestinationGroupPress('Uttarakhand')}>
+              <View style={styles.groupHeader}>
+                <Text style={styles.groupIcon}>🏔️</Text>
+                <View style={styles.groupInfo}>
+                  <Text style={styles.groupName}>Uttarakhand Escapes</Text>
+                  <Text style={styles.groupDescription}>4-8 days • ₹12,000-₹25,000 per person</Text>
+                  <Text style={styles.groupPackages}>Spiritual & Adventure tours</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+            
             <Text style={styles.previewText}>
-              {preview.total_packages} packages available
-            </Text>
-            <Text style={styles.previewText}>
-              Price range: ₹{preview.price_range.min} - ₹{preview.price_range.max}
-            </Text>
-            <Text style={styles.previewText}>
-              Popular destinations: {preview.available_destinations.slice(0, 3).join(', ')}
+              Total {preview.total_packages} packages available across all destinations
             </Text>
           </Card>
         )}
