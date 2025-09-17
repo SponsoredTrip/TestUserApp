@@ -1189,6 +1189,164 @@ class BackendTester:
             self.log_result("Avatar ID Validation", False, f"Request failed: {str(e)}")
             return False
 
+    def test_user_registration_with_avatar(self):
+        """Test user registration assigns random avatar_id (CRITICAL BUG FIX VALIDATION)"""
+        print("🔄 Testing User Registration with Avatar Assignment...")
+        
+        # Create unique test user for avatar testing
+        avatar_test_user = {
+            "username": "avatar_test_" + str(uuid.uuid4())[:8],
+            "email": f"avatar_test_{uuid.uuid4()}@example.com",
+            "password": "SecurePass123!",
+            "full_name": "Avatar Test User"
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/auth/register",
+                headers=self.headers,
+                json=avatar_test_user,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if all(key in data for key in ["access_token", "token_type", "user"]):
+                    user_data = data["user"]
+                    
+                    # CRITICAL: Verify avatar_id field is present
+                    if "avatar_id" in user_data:
+                        avatar_id = user_data["avatar_id"]
+                        
+                        # Verify avatar_id is one of the expected values (avatar1-avatar8)
+                        expected_avatars = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+                        
+                        if avatar_id in expected_avatars:
+                            self.log_result("User Registration with Avatar", True, 
+                                          f"New user assigned random avatar: {avatar_id}")
+                            return True
+                        else:
+                            self.log_result("User Registration with Avatar", False, 
+                                          f"Invalid avatar_id assigned: {avatar_id} (expected one of {expected_avatars})")
+                            return False
+                    else:
+                        self.log_result("User Registration with Avatar", False, 
+                                      "avatar_id field missing from user registration response")
+                        return False
+                else:
+                    self.log_result("User Registration with Avatar", False, 
+                                  f"Missing required fields in registration response: {data}")
+                    return False
+            else:
+                self.log_result("User Registration with Avatar", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("User Registration with Avatar", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_user_login_returns_avatar(self):
+        """Test user login returns avatar_id in user data (CRITICAL BUG FIX VALIDATION)"""
+        print("🔄 Testing User Login Returns Avatar ID...")
+        
+        # Use the existing test user that should have been registered
+        if not hasattr(self, 'test_user_data'):
+            self.log_result("User Login Returns Avatar", False, "No test user available for login test")
+            return False
+        
+        login_data = {
+            "username": self.test_user_data["username"],
+            "password": self.test_user_data["password"]
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/auth/login",
+                headers=self.headers,
+                json=login_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if all(key in data for key in ["access_token", "token_type", "user"]):
+                    user_data = data["user"]
+                    
+                    # CRITICAL: Verify avatar_id field is present in login response
+                    if "avatar_id" in user_data:
+                        avatar_id = user_data["avatar_id"]
+                        expected_avatars = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+                        
+                        if avatar_id in expected_avatars:
+                            self.log_result("User Login Returns Avatar", True, 
+                                          f"Login response includes avatar_id: {avatar_id}")
+                            return True
+                        else:
+                            self.log_result("User Login Returns Avatar", False, 
+                                          f"Invalid avatar_id in login response: {avatar_id}")
+                            return False
+                    else:
+                        self.log_result("User Login Returns Avatar", False, 
+                                      "avatar_id field missing from login response")
+                        return False
+                else:
+                    self.log_result("User Login Returns Avatar", False, 
+                                  f"Missing required fields in login response: {data}")
+                    return False
+            else:
+                self.log_result("User Login Returns Avatar", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("User Login Returns Avatar", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_current_user_includes_avatar(self):
+        """Test GET /api/auth/me includes avatar_id (CRITICAL BUG FIX VALIDATION)"""
+        print("🔄 Testing Current User Includes Avatar ID...")
+        
+        if not self.auth_token:
+            self.log_result("Current User Includes Avatar", False, "No auth token available")
+            return False
+        
+        try:
+            response = requests.get(
+                f"{self.base_url}/auth/me",
+                headers=self.headers,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                
+                # CRITICAL: Verify avatar_id field is present in current user response
+                if "avatar_id" in user_data:
+                    avatar_id = user_data["avatar_id"]
+                    expected_avatars = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+                    
+                    if avatar_id in expected_avatars:
+                        self.log_result("Current User Includes Avatar", True, 
+                                      f"Current user endpoint includes avatar_id: {avatar_id}")
+                        return True
+                    else:
+                        self.log_result("Current User Includes Avatar", False, 
+                                      f"Invalid avatar_id in current user response: {avatar_id}")
+                        return False
+                else:
+                    self.log_result("Current User Includes Avatar", False, 
+                                  "avatar_id field missing from current user response")
+                    return False
+            else:
+                self.log_result("Current User Includes Avatar", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Current User Includes Avatar", False, f"Request failed: {str(e)}")
+            return False
+
     def test_sponsored_filter_fix(self):
         """Test the sponsored filter fix - GET /api/agents?agent_type=sponsored"""
         print("🔄 Testing Sponsored Filter Fix...")
