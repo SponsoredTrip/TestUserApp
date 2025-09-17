@@ -30,6 +30,8 @@ interface Agent {
   location: string;
   contact_phone: string;
   contact_email: string;
+  is_subscribed?: boolean;
+  subscription_type?: string;
 }
 
 interface Package {
@@ -41,6 +43,10 @@ interface Package {
   duration: string;
   destination: string;
   features: string[];
+  is_sponsored?: boolean;
+  original_price?: number;
+  sponsored_price?: number;
+  discount_percentage?: number;
 }
 
 export default function AgentDetails() {
